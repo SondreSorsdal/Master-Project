@@ -1,0 +1,116 @@
+---
+title: "Aphid shoot"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(stringr)
+library(readxl)
+library(readr)
+library(lubridate)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+
+```{r}
+#Loading dataset
+aphid_shoot <- read_excel("data/Aphid_shoot_trial1.xlsx")
+```
+
+
+
+```{r}
+
+#Making dataframe of each date measured. Treatment 1 to 9 is included.
+
+aphid_shoot.df <- aphid_shoot %>%
+  filter(between(behandling, 1,9)) %>% 
+    select(Trenummer,behandling,`Aphid_16/06`) %>% 
+    group_by(behandling)
+
+aphid_shoot1.df <- aphid_shoot %>%
+  filter(between(behandling, 1,9)) %>% 
+    select(Trenummer,behandling, `Aphid_ 23/06`) %>% 
+    group_by(behandling)
+
+aphid_shoot2.df <- aphid_shoot %>%
+  filter(between(behandling, 1,9)) %>% 
+    select(Trenummer,behandling, `Aphid_30/06`) %>% 
+    group_by(behandling)
+
+aphid_shoot3.df <- aphid_shoot %>%
+  filter(between(behandling, 1,9)) %>% 
+    select(Trenummer,behandling, `Aphid_07/07`) %>% 
+    group_by(behandling)
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+#Making simple boxplots for visualisation
+
+ ggplot(aphid_shoot.df) +
+  aes(x = behandling, y = `Aphid_16/06`) +
+  geom_boxplot() +
+  scale_color_hue(direction = 1) +
+  labs(
+    x = "Treatment",
+    y = "Aphid shoots",
+    title = "Aphid shoot 16/06"
+  ) +
+   theme_minimal()
+
+ ggplot(aphid_shoot1.df) +
+  aes(x = behandling, y = `Aphid_ 23/06`
+      ) +
+  geom_boxplot() +
+  scale_color_hue(direction = 1) +
+  labs(
+    x = "Treatment",
+    y = "Aphid shoots",
+    title = "Aphid shoot 23/06"
+  ) +
+  theme_minimal()
+
+
+ ggplot(aphid_shoot2.df) +
+  aes(x = behandling, y = `Aphid_30/06`
+      ) +
+  geom_boxplot() +
+  scale_color_hue(direction = 1) +
+  labs(
+    x = "Treatment",
+    y = "Aphid shoots",
+    title = "Aphid shoot 30/06"
+  ) +
+  theme_minimal()
+
+ ggplot(aphid_shoot3.df) +
+  aes(x = behandling, y = `Aphid_07/07`
+      ) +
+  geom_boxplot() +
+  scale_color_hue(direction = 1) +
+  labs(
+    x = "Treatment",
+    y = "Aphid shoots",
+    title = "Aphid shoot 07/07"
+  ) +
+  theme_minimal()
+
+
+
+```
+
