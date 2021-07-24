@@ -53,12 +53,9 @@ aphid_shoot3.df <- aphid_shoot %>%
 ```
 
 
-```{r}
-
-```
 
 
-```{r}
+```{r echo = FALSE}
 
 #Making simple boxplots for visualisation
 
