@@ -24,32 +24,62 @@ When you click the **Knit** button a document will be generated that includes bo
 #Loading dataset
 aphid_shoot <- read_excel("data/Aphid_shoot_trial1.xlsx")
 
+
+#Dataframe for frass spray application experiment
 spray_frass.df <- aphid_shoot %>% 
   filter(experiment %in% c('felles', '2a'))
+
+#Dataframe for frass in soil experiment
+frass_soil.df <- aphid_shoot %>% 
+  filter(experiment %in% c('felles', '2b'))
 ```
 
 
 
 ```{r}
 
-#Making dataframe of each date measured. Filtering out treatment 2 since this is the control for experiment 2b.
+#Making dataframe of each date measured. Filtering out treatment 3 since this is the control for experiment 2b.
 
 aphid_shoot_spray1.df <- spray_frass.df %>%
-  filter(!behandling == 2) %>% 
+  filter(!behandling == 3) %>% 
     select(Trenummer,behandling,`Aphid_16/06`) %>% 
     group_by(behandling)
 
 aphid_shoot_spray2.df <- spray_frass.df %>%
-  filter(!behandling == 2) %>% 
+  filter(!behandling == 3) %>% 
     select(Trenummer,behandling, `Aphid_ 23/06`) %>% 
     group_by(behandling)
 
 aphid_shoot_spray3.df <- spray_frass.df %>%
-  filter(!behandling == 2) %>% 
+  filter(!behandling == 3) %>% 
     select(Trenummer,behandling, `Aphid_30/06`) %>% 
     group_by(behandling)
 
 aphid_shoot_spray4.df <- spray_frass.df %>%
+  filter(!behandling == 3) %>% 
+    select(Trenummer,behandling, `Aphid_07/07`) %>% 
+    group_by(behandling)
+```
+
+```{r}
+#Making dataframe of each date measured. Filtering out treatment 3 since this is the control for experiment 2a.
+
+frass_soil_shoot1.df <- frass_soil.df %>%
+  filter(!behandling == 2) %>% 
+    select(Trenummer,behandling,`Aphid_16/06`) %>% 
+    group_by(behandling)
+
+frass_soil_shoot2.df <- frass_soil.df %>%
+  filter(!behandling == 2) %>% 
+    select(Trenummer,behandling, `Aphid_ 23/06`) %>% 
+    group_by(behandling)
+
+frass_soil_shoot3.df <- frass_soil.df %>%
+  filter(!behandling == 2) %>% 
+    select(Trenummer,behandling, `Aphid_30/06`) %>% 
+    group_by(behandling)
+
+frass_soil_shoot4.df <- frass_soil.df %>%
   filter(!behandling == 2) %>% 
     select(Trenummer,behandling, `Aphid_07/07`) %>% 
     group_by(behandling)
@@ -57,10 +87,9 @@ aphid_shoot_spray4.df <- spray_frass.df %>%
 
 
 
-
 ```{r echo = FALSE}
 
-#Making simple boxplots for visualisation
+#Making simple boxplots for visualisation for spray application experiment
 
  ggplot(aphid_shoot_spray1.df) +
   aes(x = behandling, y = `Aphid_16/06`) +
@@ -110,6 +139,61 @@ aphid_shoot_spray4.df <- spray_frass.df %>%
   ) +
   theme_minimal()
 
+
+
+```
+
+
+```{r}
+#Making simple boxplots for visualisation for frass in soil experiment
+
+ ggplot(frass_soil_shoot1.df) +
+  aes(x = behandling, y = `Aphid_16/06`) +
+  geom_boxplot() +
+  scale_color_hue(direction = 1) +
+  labs(
+    x = "Treatment",
+    y = "Aphid shoots",
+    title = "Aphid shoot 16/06"
+  ) +
+   theme_minimal()
+
+ ggplot(frass_soil_shoot2.df) +
+  aes(x = behandling, y = `Aphid_ 23/06`
+      ) +
+  geom_boxplot() +
+  scale_color_hue(direction = 1) +
+  labs(
+    x = "Treatment",
+    y = "Aphid shoots",
+    title = "Aphid shoot 23/06"
+  ) +
+  theme_minimal()
+
+
+ ggplot(frass_soil_shoot3.df) +
+  aes(x = behandling, y = `Aphid_30/06`
+      ) +
+  geom_boxplot() +
+  scale_color_hue(direction = 1) +
+  labs(
+    x = "Treatment",
+    y = "Aphid shoots",
+    title = "Aphid shoot 30/06"
+  ) +
+  theme_minimal()
+
+ ggplot(frass_soil_shoot4.df) +
+  aes(x = behandling, y = `Aphid_07/07`
+      ) +
+  geom_boxplot() +
+  scale_color_hue(direction = 1) +
+  labs(
+    x = "Treatment",
+    y = "Aphid shoots",
+    title = "Aphid shoot 07/07"
+  ) +
+  theme_minimal()
 
 
 ```
