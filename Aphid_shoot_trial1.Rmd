@@ -23,31 +23,34 @@ When you click the **Knit** button a document will be generated that includes bo
 ```{r}
 #Loading dataset
 aphid_shoot <- read_excel("data/Aphid_shoot_trial1.xlsx")
+
+spray_frass.df <- aphid_shoot %>% 
+  filter(experiment %in% c('felles', '2a'))
 ```
 
 
 
 ```{r}
 
-#Making dataframe of each date measured. Treatment 1 to 9 is included.
+#Making dataframe of each date measured. Filtering out treatment 2 since this is the control for experiment 2b.
 
-aphid_shoot.df <- aphid_shoot %>%
-  filter(between(behandling, 1,9)) %>% 
+aphid_shoot_spray1.df <- spray_frass.df %>%
+  filter(!behandling == 2) %>% 
     select(Trenummer,behandling,`Aphid_16/06`) %>% 
     group_by(behandling)
 
-aphid_shoot1.df <- aphid_shoot %>%
-  filter(between(behandling, 1,9)) %>% 
+aphid_shoot_spray2.df <- spray_frass.df %>%
+  filter(!behandling == 2) %>% 
     select(Trenummer,behandling, `Aphid_ 23/06`) %>% 
     group_by(behandling)
 
-aphid_shoot2.df <- aphid_shoot %>%
-  filter(between(behandling, 1,9)) %>% 
+aphid_shoot_spray3.df <- spray_frass.df %>%
+  filter(!behandling == 2) %>% 
     select(Trenummer,behandling, `Aphid_30/06`) %>% 
     group_by(behandling)
 
-aphid_shoot3.df <- aphid_shoot %>%
-  filter(between(behandling, 1,9)) %>% 
+aphid_shoot_spray4.df <- spray_frass.df %>%
+  filter(!behandling == 2) %>% 
     select(Trenummer,behandling, `Aphid_07/07`) %>% 
     group_by(behandling)
 ```
@@ -59,7 +62,7 @@ aphid_shoot3.df <- aphid_shoot %>%
 
 #Making simple boxplots for visualisation
 
- ggplot(aphid_shoot.df) +
+ ggplot(aphid_shoot_spray1.df) +
   aes(x = behandling, y = `Aphid_16/06`) +
   geom_boxplot() +
   scale_color_hue(direction = 1) +
@@ -70,7 +73,7 @@ aphid_shoot3.df <- aphid_shoot %>%
   ) +
    theme_minimal()
 
- ggplot(aphid_shoot1.df) +
+ ggplot(aphid_shoot_spray2.df) +
   aes(x = behandling, y = `Aphid_ 23/06`
       ) +
   geom_boxplot() +
@@ -83,7 +86,7 @@ aphid_shoot3.df <- aphid_shoot %>%
   theme_minimal()
 
 
- ggplot(aphid_shoot2.df) +
+ ggplot(aphid_shoot_spray3.df) +
   aes(x = behandling, y = `Aphid_30/06`
       ) +
   geom_boxplot() +
@@ -95,7 +98,7 @@ aphid_shoot3.df <- aphid_shoot %>%
   ) +
   theme_minimal()
 
- ggplot(aphid_shoot3.df) +
+ ggplot(aphid_shoot_spray4.df) +
   aes(x = behandling, y = `Aphid_07/07`
       ) +
   geom_boxplot() +
