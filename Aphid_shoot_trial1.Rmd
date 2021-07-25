@@ -21,18 +21,18 @@ When you click the **Knit** button a document will be generated that includes bo
 
 
 ```{r}
-##Aphid shoot length##
+##Aphid infected shoots##
 
-#Loading dataset for aphid shoot length
-aphid_shoot <- read_excel("data/Aphid_shoot_trial1.xlsx")
+#Loading dataset for aphid infected shoots 
+aphid_infected_shoot <- read_excel("data/Aphid_shoot_trial1.xlsx")
 
 
 #Dataframe for frass spray application experiment
-spray_frass.df <- aphid_shoot %>% 
+spray_frass.df <- aphid_infected_shoot %>% 
   filter(experiment %in% c('felles', '2a'))
 
 #Dataframe for frass in soil experiment
-frass_soil.df <- aphid_shoot %>% 
+frass_soil.df <- aphid_infected_shoot %>% 
   filter(experiment %in% c('felles', '2b'))
 ```
 
@@ -64,7 +64,7 @@ aphid_shoot_spray4.df <- spray_frass.df %>%
 ```
 
 ```{r}
-#Making dataframe of each date measured. Filtering out treatment 3 since this is the control for experiment 2a.
+#Making dataframe of each date measured. Filtering out treatment 2 since this is the control for experiment 2a.
 
 frass_soil_shoot1.df <- frass_soil.df %>%
   filter(!behandling == 2) %>% 
@@ -198,5 +198,144 @@ frass_soil_shoot4.df <- frass_soil.df %>%
   theme_minimal()
 
 
+```
+
+##Aphid shoot length##
+
+```{r}
+##Aphid shoot length##
+
+#Loading dataset for aphid shoot length
+aphid_shoot_length <- read_excel("data/Shoot_length.xlsx")
+
+
+#Dataframe for shoot length in frass spray application experiment
+shoot_length_spray.df <- aphid_shoot_length %>% 
+  filter(experiment %in% c('felles', '2a'))
+
+#Dataframe for shoot length in frass in soil experiment
+frass_length_soil.df <- aphid_shoot_length %>% 
+  filter(experiment %in% c('felles', '2b'))
+
+
+```
+
+```{r}
+
+#Making dataframe of each date measured. Filtering out treatment 3 since this is the control for experiment 2b.
+
+frass_spray_shoot_length1.df <- shoot_length_spray.df %>%
+  filter(!behandling == 3) %>% 
+    select(behandling,`Shoot_length_01-04/6`) %>% 
+    group_by(behandling)
+
+frass_spray_shoot_length2.df <- shoot_length_spray.df %>%
+  filter(!behandling == 3) %>% 
+    select(behandling,`Shoot_length_18/6`) %>% 
+    group_by(behandling)
+
+frass_spray_shoot_length3.df <- shoot_length_spray.df %>%
+  filter(!behandling == 3) %>% 
+    select(behandling,`Shoot_length_09/7`) %>% 
+    group_by(behandling)
+
+
+```
+
+```{r}
+#Making simple boxplots for visualisation for shoot length in spray application
+
+ ggplot(frass_spray_shoot_length1.df) +
+  aes(x = behandling, y = `Shoot_length_01-04/6`) +
+  geom_boxplot() +
+  scale_color_hue(direction = 1) +
+  labs(
+    x = "Treatment",
+    y = "Shoot length",
+    title = "Aphid shoot 01/06 - Frass spray application"
+  ) +
+   theme_minimal()
+
+ ggplot(frass_spray_shoot_length2.df) +
+  aes(x = behandling, y = `Shoot_length_18/6`) +
+  geom_boxplot() +
+  scale_color_hue(direction = 1) +
+  labs(
+    x = "Treatment",
+    y = "Shoot length",
+    title = "Aphid shoot 18/06 - Frass spray application"
+  ) +
+   theme_minimal()
+ 
+  ggplot(frass_spray_shoot_length3.df) +
+  aes(x = behandling, y = `Shoot_length_09/7`) +
+  geom_boxplot() +
+  scale_color_hue(direction = 1) +
+  labs(
+    x = "Treatment",
+    y = "Shoot length",
+    title = "Aphid shoot 09/07 - Frass spray application"
+  ) +
+   theme_minimal()
+```
+
+
+
+```{r}
+
+#Making dataframe of each date measured. Filtering out treatment 2 since this is the control for experiment 2a.
+
+frass_soil_shoot_length1.df <- frass_length_soil.df %>%
+  filter(!behandling == 2) %>% 
+    select(behandling,`Shoot_length_01-04/6`) %>% 
+    group_by(behandling)
+
+frass_soil_shoot_length2.df <- frass_length_soil.df %>%
+  filter(!behandling == 2) %>% 
+    select(behandling,`Shoot_length_18/6`) %>% 
+    group_by(behandling)
+
+frass_soil_shoot_length3.df <- frass_length_soil.df %>%
+  filter(!behandling == 2) %>% 
+    select(behandling,`Shoot_length_09/7`) %>% 
+    group_by(behandling)
+```
+
+
+```{r}
+#Making simple boxplots for visualisation for shoot length in frass in soil
+
+ ggplot(frass_soil_shoot_length1.df) +
+  aes(x = behandling, y = `Shoot_length_01-04/6`) +
+  geom_boxplot() +
+  scale_color_hue(direction = 1) +
+  labs(
+    x = "Treatment",
+    y = "Shoot length",
+    title = "Aphid shoot length 01/06 - Frass in soil"
+  ) +
+   theme_minimal()
+
+ ggplot(frass_soil_shoot_length2.df) +
+  aes(x = behandling, y = `Shoot_length_18/6`) +
+  geom_boxplot() +
+  scale_color_hue(direction = 1) +
+  labs(
+    x = "Treatment",
+    y = "Shoot length",
+    title = "Aphid shoot length 18/06 - Frass in soil"
+  ) +
+   theme_minimal()
+ 
+  ggplot(frass_soil_shoot_length3.df) +
+  aes(x = behandling, y = `Shoot_length_09/7`) +
+  geom_boxplot() +
+  scale_color_hue(direction = 1) +
+  labs(
+    x = "Treatment",
+    y = "Shoot length",
+    title = "Aphid shoot length 09/07 - Frass in soil"
+  ) +
+   theme_minimal()
 ```
 
