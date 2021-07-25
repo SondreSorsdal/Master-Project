@@ -11,16 +11,12 @@ library(stringr)
 library(readxl)
 library(readr)
 library(lubridate)
+library(patchwork)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 
-```{r}
+```{r include=FALSE}
 ##Aphid infected shoots##
 
 #Loading dataset for aphid infected shoots 
@@ -38,7 +34,7 @@ frass_soil.df <- aphid_infected_shoot %>%
 
 
 
-```{r}
+```{r include=FALSE}
 
 #Making dataframe of each date measured. Filtering out treatment 3 since this is the control for experiment 2b.
 
@@ -63,7 +59,7 @@ aphid_shoot_spray4.df <- spray_frass.df %>%
     group_by(behandling)
 ```
 
-```{r}
+```{r echo=FALSE, warning=FALSE}
 #Making dataframe of each date measured. Filtering out treatment 2 since this is the control for experiment 2a.
 
 frass_soil_shoot1.df <- frass_soil.df %>%
@@ -89,22 +85,22 @@ frass_soil_shoot4.df <- frass_soil.df %>%
 
 
 
-```{r echo = FALSE}
+```{r echo = FALSE, warning=FALSE}
 
 #Making simple boxplots for visualisation for spray application experiment
 
- ggplot(aphid_shoot_spray1.df) +
+ p1 <- ggplot(aphid_shoot_spray1.df) +
   aes(x = behandling, y = `Aphid_16/06`) +
   geom_boxplot() +
   scale_color_hue(direction = 1) +
   labs(
     x = "Treatment",
     y = "Aphid shoots",
-    title = "Aphid shoot 16/06"
+    title = "Sprayed Aphid shoots 16/06"
   ) +
    theme_minimal()
 
- ggplot(aphid_shoot_spray2.df) +
+ p2 <- ggplot(aphid_shoot_spray2.df) +
   aes(x = behandling, y = `Aphid_ 23/06`
       ) +
   geom_boxplot() +
@@ -112,12 +108,12 @@ frass_soil_shoot4.df <- frass_soil.df %>%
   labs(
     x = "Treatment",
     y = "Aphid shoots",
-    title = "Aphid shoot 23/06"
+    title = "Sprayed Aphid shoots 23/06"
   ) +
   theme_minimal()
 
 
- ggplot(aphid_shoot_spray3.df) +
+ p3 <- ggplot(aphid_shoot_spray3.df) +
   aes(x = behandling, y = `Aphid_30/06`
       ) +
   geom_boxplot() +
@@ -125,11 +121,11 @@ frass_soil_shoot4.df <- frass_soil.df %>%
   labs(
     x = "Treatment",
     y = "Aphid shoots",
-    title = "Aphid shoot 30/06"
+    title = "Sprayed Aphid shoots 30/06"
   ) +
   theme_minimal()
 
- ggplot(aphid_shoot_spray4.df) +
+ p4 <- ggplot(aphid_shoot_spray4.df) +
   aes(x = behandling, y = `Aphid_07/07`
       ) +
   geom_boxplot() +
@@ -137,30 +133,32 @@ frass_soil_shoot4.df <- frass_soil.df %>%
   labs(
     x = "Treatment",
     y = "Aphid shoots",
-    title = "Aphid shoot 07/07"
+    title = "Sprayed Aphid shoots 07/07"
   ) +
   theme_minimal()
 
 
+ p1 + p2 + p3 + p4
 
 ```
 
 
-```{r}
+
+```{r echo = FALSE, warning=FALSE}
 #Making simple boxplots for visualisation for frass in soil experiment
 
- ggplot(frass_soil_shoot1.df) +
+ s1 <- ggplot(frass_soil_shoot1.df) +
   aes(x = behandling, y = `Aphid_16/06`) +
   geom_boxplot() +
   scale_color_hue(direction = 1) +
   labs(
     x = "Treatment",
     y = "Aphid shoots",
-    title = "Aphid shoot 16/06"
+    title = "Soil Aphid shoots 16/06"
   ) +
    theme_minimal()
 
- ggplot(frass_soil_shoot2.df) +
+ s2 <- ggplot(frass_soil_shoot2.df) +
   aes(x = behandling, y = `Aphid_ 23/06`
       ) +
   geom_boxplot() +
@@ -168,12 +166,12 @@ frass_soil_shoot4.df <- frass_soil.df %>%
   labs(
     x = "Treatment",
     y = "Aphid shoots",
-    title = "Aphid shoot 23/06"
+    title = "Soil Aphid shoots 23/06"
   ) +
   theme_minimal()
 
 
- ggplot(frass_soil_shoot3.df) +
+ s3 <- ggplot(frass_soil_shoot3.df) +
   aes(x = behandling, y = `Aphid_30/06`
       ) +
   geom_boxplot() +
@@ -181,11 +179,11 @@ frass_soil_shoot4.df <- frass_soil.df %>%
   labs(
     x = "Treatment",
     y = "Aphid shoots",
-    title = "Aphid shoot 30/06"
+    title = "Soil Aphid shoots 30/06"
   ) +
   theme_minimal()
 
- ggplot(frass_soil_shoot4.df) +
+ s4 <- ggplot(frass_soil_shoot4.df) +
   aes(x = behandling, y = `Aphid_07/07`
       ) +
   geom_boxplot() +
@@ -193,16 +191,17 @@ frass_soil_shoot4.df <- frass_soil.df %>%
   labs(
     x = "Treatment",
     y = "Aphid shoots",
-    title = "Aphid shoot 07/07"
+    title = "Soil Aphid shoots 07/07"
   ) +
   theme_minimal()
 
+ s1 + s2 + s3 + s4
 
 ```
 
 ##Aphid shoot length##
 
-```{r}
+```{r include=FALSE}
 ##Aphid shoot length##
 
 #Loading dataset for aphid shoot length
@@ -220,7 +219,7 @@ frass_length_soil.df <- aphid_shoot_length %>%
 
 ```
 
-```{r}
+```{r include=FALSE}
 
 #Making dataframe of each date measured. Filtering out treatment 3 since this is the control for experiment 2b.
 
@@ -242,46 +241,48 @@ frass_spray_shoot_length3.df <- shoot_length_spray.df %>%
 
 ```
 
-```{r}
+```{r echo = FALSE, warning=FALSE}
 #Making simple boxplots for visualisation for shoot length in spray application
 
- ggplot(frass_spray_shoot_length1.df) +
+lp1 <- ggplot(frass_spray_shoot_length1.df) +
   aes(x = behandling, y = `Shoot_length_01-04/6`) +
   geom_boxplot() +
   scale_color_hue(direction = 1) +
   labs(
     x = "Treatment",
     y = "Shoot length",
-    title = "Aphid shoot 01/06 - Frass spray application"
+    title = "Spray shoot length 01/06"
   ) +
    theme_minimal()
 
- ggplot(frass_spray_shoot_length2.df) +
+lp2 <-  ggplot(frass_spray_shoot_length2.df) +
   aes(x = behandling, y = `Shoot_length_18/6`) +
   geom_boxplot() +
   scale_color_hue(direction = 1) +
   labs(
     x = "Treatment",
     y = "Shoot length",
-    title = "Aphid shoot 18/06 - Frass spray application"
+    title = "Spray shoot length 18/06"
   ) +
    theme_minimal()
  
-  ggplot(frass_spray_shoot_length3.df) +
+lp3 <- ggplot(frass_spray_shoot_length3.df) +
   aes(x = behandling, y = `Shoot_length_09/7`) +
   geom_boxplot() +
   scale_color_hue(direction = 1) +
   labs(
     x = "Treatment",
     y = "Shoot length",
-    title = "Aphid shoot 09/07 - Frass spray application"
+    title = "Spray shoot length 09/07"
   ) +
    theme_minimal()
+
+lp1 + lp2 + lp3
 ```
 
 
 
-```{r}
+```{r include=FALSE}
 
 #Making dataframe of each date measured. Filtering out treatment 2 since this is the control for experiment 2a.
 
@@ -302,40 +303,42 @@ frass_soil_shoot_length3.df <- frass_length_soil.df %>%
 ```
 
 
-```{r}
+```{r echo = FALSE, warning=FALSE}
 #Making simple boxplots for visualisation for shoot length in frass in soil
 
- ggplot(frass_soil_shoot_length1.df) +
+ls1 <-ggplot(frass_soil_shoot_length1.df) +
   aes(x = behandling, y = `Shoot_length_01-04/6`) +
   geom_boxplot() +
   scale_color_hue(direction = 1) +
   labs(
     x = "Treatment",
     y = "Shoot length",
-    title = "Aphid shoot length 01/06 - Frass in soil"
+    title = "Soil shoot length 01/06"
   ) +
    theme_minimal()
 
- ggplot(frass_soil_shoot_length2.df) +
+ls2 <- ggplot(frass_soil_shoot_length2.df) +
   aes(x = behandling, y = `Shoot_length_18/6`) +
   geom_boxplot() +
   scale_color_hue(direction = 1) +
   labs(
     x = "Treatment",
     y = "Shoot length",
-    title = "Aphid shoot length 18/06 - Frass in soil"
+    title = "Soil shoot length 18/06"
   ) +
    theme_minimal()
  
-  ggplot(frass_soil_shoot_length3.df) +
+ls3 <- ggplot(frass_soil_shoot_length3.df) +
   aes(x = behandling, y = `Shoot_length_09/7`) +
   geom_boxplot() +
   scale_color_hue(direction = 1) +
   labs(
     x = "Treatment",
     y = "Shoot length",
-    title = "Aphid shoot length 09/07 - Frass in soil"
+    title = "Soil shoot length 09/07"
   ) +
    theme_minimal()
+
+ls1 + ls2 + ls3
 ```
 
