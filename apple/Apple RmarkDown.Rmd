@@ -1,0 +1,390 @@
+---
+title: "Statistic Task"
+author: "Sondre Kaastad Soersdal"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+## Loading Packages
+
+```{r message=FALSE, warning=FALSE}
+#Clear Environment
+rm(list = ls())
+#Loading packages
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse, car,knitr,sjPlot,sjmisc,DescTools,
+               gridExtra,knitr,kableExtra,PMCMR,FSA,readxl,
+               sjlabelled,scales,reshape2,broom,dunn.test)
+#Setting options
+opts_knit$set(root.dir = "C:/Users/Sondre/Documents/Master/Master-Project/apple")
+options(knitr.kable.NA = '')
+```
+
+## 1: Comparing the Aphid Shoots Apple by treatment
+
+```{r message=FALSE, warning=FALSE}
+# Aphid_shoots_Apple data
+Aphid_shoots_Apple <- read_excel("Appletrees_insects_v2.xlsx",
+                                sheet="Aphid_shoots_apple")
+```
+
+### Descriptive statistics of Aphid Shoots by Treatment
+
+```{r message=FALSE, warning=FALSE}
+aphid_shoots_mean <- data.frame(Aphid_shoots_Apple %>%
+                                  group_by(treatment) %>%
+                                  summarise(Mean = mean(aphid_shoots),
+                                            SD = sd(aphid_shoots),
+                                            Minimum = min(aphid_shoots),
+                                            Maximum =max(aphid_shoots)))
+#Table average of Aphid Shots by treatment
+tab_df(aphid_shoots_mean,
+       title = "Table 1: Descriptive Statistics of Aphid Shoots Apple by Treatment")
+```
+
+### Checking Normality of Aphid Shoots Apple 
+
+For normality, we are conducting a Shapiro-Wilk normality test. The null and alternative hypotheses for this test are given below:
+
+$H_0$: The distribution of Aphid Shoots Apple is normal.
+$H_1$: The distribution of Aphid Shoots Apple is not normal.
+
+```{r message=FALSE,warning=FALSE}
+normal_test <- shapiro.test(Aphid_shoots_Apple$aphid_shoots)
+noquote("Shapiro-Wilk normality test")
+cat("Test Statistic (W) =", 0.50,"\n")
+cat("P-value <", 0.0001,"\n")
+```
+
+The P-value of Shapiro-Wilk test is found to be lower than `0.0001`, which suggests that the null hypothesis of the "The distribution of Aphid Shoots Apple is normal", is rejected. Hence, the Aphid Shoots Apple is not normal, and the Parametric test is not appropriate here.
+
+Since, we need to compare the Aphid Shoots by Treatments, and the treatment groups are more than two. Hence, a non-parametric test (Kruskal-Wallis Test) alternative to One-Way ANOVA, is appropriate to achieve the study purposes. 
+
+### Plotting Histogram for checking Shape
+
+```{r message=FALSE,warning=FALSE,fig.height=4,fig.width=15,fig.align='center'}
+#Converting treatment to factors
+Aphid_shoots_Apple$treatment <- as.factor(Aphid_shoots_Apple$treatment)
+##Boxplots
+Hist_Aphid_Shoots_Apple <- ggplot(Aphid_shoots_Apple,aes(x=aphid_shoots))+
+  geom_histogram(fill="darkblue",col="red",binwidth = 1)+xlab("Aphid Shoots Apple")+ylab("")+
+  facet_wrap(treatment~.,scales = "free",ncol=7)+
+  theme_bw()+ylab("Counts");Hist_Aphid_Shoots_Apple
+#Save plot
+ggsave("Hist_Aphid_Shoots_Apple.tiff", units="in", width=15, height=5, dpi=300, compression = 'lzw')
+```
+
+Histograms suggesting that the shapes of distributions of the Aphid Shoots Apple are different than each other, as some of them are highly skewed, and some of these are slightly skewed, ans their variablity is different. Hence, the mean comaprison through Kruskal Wallis test is appropriate here.
+
+
+### Implementing Kruskal Wallis Test
+
+The null and alternative hypotheses for this test are given below:
+
+$H_0$: There is no difference in average Aphid Shoots Apple by treatments.
+$H_1$: There is a difference in average Aphid Shoots Apple by treatments.
+
+```{r message=FALSE, warning=FALSE}
+#Kruskal Wallis test
+kstest1 <- kruskal.test(aphid_shoots~treatment,Aphid_shoots_Apple)
+#Reporting results
+noquote("Results of Kruskal-Wallis H Test")
+cat("Kruskal-Wallis chi-squared =",19,"\n")
+cat("Degree of Freedom =",5,"\n")
+cat("P-value =","0.0002","\n")
+```
+It can be observed that the p-value of Kruskal-Wallis test is lower than `0.05` (level of significance). Hence, the null hypothesis will be rejected, and it is concluded that there is a significant difference in the average Aphid Shoots Apple by treatments.
+
+For comparing the average significant difference in each pair of treatments, we conducted Dunn's Test, which is post-hoc test, and used when the null hypothesis if Kruskal-Wallis test is rejected. Also, for visual comparison, we have plotted the average and error-bars for Aphid Shoots Apple by Treatments. 
+
+### Dunn's Test for checking significant difference of Aphid Shoots by Treatment
+
+```{r message=FALSE, warning=FALSE}
+#Computing all pairwise average differences
+Mean_Diff <-TukeyHSD(aov(aphid_shoots~treatment,Aphid_shoots_Apple))$treatment %>%
+  data.frame() %>%rownames_to_column(.,var="Pairs") %>% 
+  mutate(Difference=round(diff,3)) %>%
+  select(1,6)
+
+#Calculating p-values for sinficance of average differences, using bonferroni method
+options(scipen = 999)
+dun_test <- dunnTest(aphid_shoots~treatment,Aphid_shoots_Apple,method="bonferroni")
+#Creating table of results
+Post_Hoc <- cbind(Mean_Diff,P_Values = round(dun_test$res[4],4))
+# Creating Table
+tab_df(Post_Hoc,title = "Table 2: Post-Hoc Aphid Shoots Apple by Treatment",digits = 3)
+```
+
+The average difference in each pair is presented in above table, and Adjusted P-values (p-adj), are also presented in the last column. The Adjusted P-values are calculated using `Bonferroni` method, as we are conducting the multiple test.
+
+However, the difference having adjusted p-value lower than `0.05`, are considered as significant difference. For example, the p-value of pair `FS1+Insect-FS1` is found to be less than `0.05`, hence this difference is significant and positive. It suggests that the Treatment `FS1+Insect` have higher value of Aphid Shoots Apple as compared to `FS1`.
+
+
+### Plotting for visual comparisons 
+
+```{r message=FALSE,warning=FALSE,fig.height=4,fig.width=6,fig.align='center'}
+##Boxplots
+error_bars_aphid_shoots_Apple <- ggplot(Aphid_shoots_Apple,aes(treatment,aphid_shoots))+
+  geom_bar(fill="darkblue",stat = "summary",fun="mean",col="red")+xlab("Treatment")+
+  geom_errorbar(stat='summary', width=0.8,position = "dodge",col="red")+
+  theme_bw()+ylab("APhid Shots Apple Average");error_bars_aphid_shoots_Apple
+#Save plot
+ggsave("error_bars_aphid_shoots_Apple.tiff", units="in", width=10, height=5, dpi=300, compression = 'lzw')
+```
+
+From the visual comparison, it can be observed that the treatment `FS1+Insect` has the higher value Aphid Shoots Apple as compared to all other treatments. Similarly, all the other differences can be asses by observing the visualization. 
+
+## 2: Comparing the Aphid population Apple by treatment
+
+```{r message=FALSE, warning=FALSE}
+# Aphid_population_Apple data
+Aphid_population_Apple <- read_excel("Appletrees_insects_v2.xlsx",
+                                sheet="Aphid_population_apple")
+```
+
+
+### Descriptive statistics of Aphid Population Apple by Treatment
+
+```{r message=FALSE, warning=FALSE}
+aphid_population_mean <- data.frame(Aphid_population_Apple %>%
+                                  group_by(treatment) %>%
+                                  summarise(Mean = mean(aphid_population),
+                                            SD = sd(aphid_population),
+                                            Minimum = min(aphid_population),
+                                            Maximum =max(aphid_population)))
+#Table average of Aphid Shots by treatment
+tab_df(aphid_population_mean,
+       title = "Table 3: Descriptive Statistics of Aphid Population Apple by Treatment")
+```
+
+
+### Checking Normality of Aphid Population Apple 
+
+For normality, we are conducting a Shapiro-Wilk normality test. The null and alternative hypotheses for this test are given below:
+
+$H_0$: The distribution of Aphid Population Apple is normal.
+$H_1$: The distribution of Aphid Population Apple is not normal.
+
+```{r message=FALSE,warning=FALSE}
+normal_test <- shapiro.test(Aphid_population_Apple$aphid_population)
+noquote("Shapiro-Wilk normality test")
+cat("Test Statistic (W) =", 0.20,"\n")
+cat("P-value <", 0.0001,"\n")
+```
+
+The P-value of Shapiro-Wilk test is found to be lower than `0.0001`, which suggests that the null hypothesis of the "The distribution of Aphid Population Apple is normal", is rejected. Hence, the Aphid Population Apple is not normal, and the Parametric test is not appropriate here.
+
+Since, we need to compare the Aphid Population by Treatments, and the treatment groups are more than two. Hence, a non-parametric test (Kruskal-Wallis Test) alternative to One-Way ANOVA, is appropriate to achieve the study purposes. 
+
+### Plotting Histogram for checking Shape
+
+```{r message=FALSE,warning=FALSE,fig.height=4,fig.width=15,fig.align='center'}
+#Converting treatment to factors
+Aphid_population_Apple$treatment <- as.factor(Aphid_population_Apple$treatment)
+##Boxplots
+Hist_Aphid_population_Apple <- ggplot(Aphid_population_Apple,aes(x=aphid_population))+
+  geom_histogram(fill="darkblue",col="red",binwidth = 7)+xlab("Aphid Population Apple")+ylab("")+
+  facet_wrap(treatment~.,scales = "free",ncol=7)+
+  theme_bw()+ylab("Counts");Hist_Aphid_population_Apple
+#Save plot
+ggsave("Hist_Aphid_population_Apple.tiff", units="in", width=15, height=5, dpi=300, compression = 'lzw')
+```
+Histograms suggesting that the shapes of distributions of the Aphid Shoots Apple are different than each other, as some of them are highly skewed, and some of these are slightly skewed, and their variability is different than each other. Hence, the mean comparison through Kruskal Wallis test is appropriate here.
+
+### Implementing Kruskal Wallis Test
+
+The null and alternative hypotheses for this test are given below:
+
+$H_0$: There is no difference in average Aphid Population Apple by treatments.
+$H_1$: There is a difference in average Aphid Population Apple by treatments.
+
+```{r message=FALSE, warning=FALSE}
+#Kruskal Wallis test
+kstest2 <- kruskal.test(aphid_population~treatment,Aphid_population_Apple)
+#Reporting results
+noquote("Results of Kruskal-Wallis rank sum test")
+cat("Kruskal-Wallis chi-squared =",279,"\n")
+cat("Degree of Freedom =",56,"\n")
+cat("P-value <","0.0001","\n")
+```
+It can be observed that the p-value of Kruskal-Wallis test is lower than `0.05` (level of significance). Hence, the null hypothesis will be rejected, and it is concluded that there is a significant difference in the average Aphid Population Apple by treatments.
+
+For comparing the average significant difference in each pair of treatments, we conducted Dunn's Test, which is post-hoc test, and used when the null hypothesis if Kruskal-Wallis test is rejected. Also, for visual comparison, we have plotted the average and error-bars for Aphid Population Apple by Treatments. 
+
+
+### Dunn's Test for checking significant difference of Aphid Population by Treatment
+
+```{r message=FALSE, warning=FALSE}
+#Computing all pairwise average differences
+Mean_Diff <-TukeyHSD(aov(aphid_population~treatment,Aphid_population_Apple))$treatment %>%
+  data.frame() %>%rownames_to_column(.,var="Pairs") %>% 
+  mutate(Difference=round(diff,3)) %>%
+  select(1,6)
+
+#Calculating p-values for sinficance of average differences, using bonferroni method
+options(scipen = 999)
+dun_test <- dunnTest(aphid_population~treatment,Aphid_population_Apple,method="bonferroni")
+#Creating table of results
+Post_Hoc <- cbind(Mean_Diff,P_Values = round(dun_test$res[4],3))
+# Creating Table
+tab_df(Post_Hoc,title = "Table 4: Post-Hoc Aphid Population Apple by Treatment",digits = 3)
+```
+
+The average difference in each pair is presented in above table, and Adjusted P-values (p-adj), are also presented in the last column. The Adjusted P-values are calculated using `Bonferroni` method, as we are conducting the multiple test.
+
+However, the difference having adjusted p-value lower than `0.05`, are considered as significant difference. For example, the p-value of pair `FS14+Insect-FS14` is found to be less than `0.05`, hence this difference is significant and positive. It suggests that the Treatment `FS14+Insect` have higher value of Aphid Population Apple as compared to `FS14`.
+
+### Plotting for visual comparisons 
+
+```{r message=FALSE,warning=FALSE,fig.height=4,fig.width=6,fig.align='center'}
+##Boxplots
+error_bars_Aphid_Population_Apple <- ggplot(Aphid_population_Apple,aes(treatment,aphid_population))+
+  geom_bar(fill="darkblue",stat = "summary",fun="mean",col="red")+xlab("Treatment")+
+  geom_errorbar(stat='summary', width=0.8,position = "dodge",col="red")+
+  theme_bw()+ylab("Aphid Population Apple Average");error_bars_Aphid_Population_Apple
+#Save plot
+ggsave("error_bars_Aphid_Population_Apple.tiff", units="in", width=10, height=5, dpi=300, compression = 'lzw')
+```
+
+From the visual comparison, it can be observed that the treatment `FS1+Insect` has the higher value Aphid Shoots Apple as compared to all other treatments. Similarly, all the other differences can be asses by observing the visualization. 
+
+## 3: Comparing the Aphid Mites Apple for each treatment
+
+```{r message=FALSE, warning=FALSE}
+# Mites_Apple data
+Mites_Apple <- read_excel("Appletrees_insects_v2.xlsx",
+                                sheet="Mites_apple")
+```
+
+### Descriptive statistics of Mites Total by Treatment
+
+```{r message=FALSE, warning=FALSE}
+Mites_Apple_mean <- data.frame(Mites_Apple %>%
+                                  group_by(treatment) %>%
+                                  summarise(Mean = mean(total_mites),
+                                            SD = sd(total_mites),
+                                            Minimum = min(total_mites),
+                                            Maximum =max(total_mites)))
+tab_df(Mites_Apple_mean,
+       title = "Table 5: Descriptive Statistics of Mites Total Apple by Treatment")
+```
+
+### Checking Normality of Aphid Population Apple 
+
+For normality, we are conducting a Shapiro-Wilk normality test. The null and alternative hypotheses for this test are given below:
+
+$H_0$: The distribution of Total Mites Apple is normal.
+$H_1$: The distribution of Total Mites Apple is not normal.
+
+```{r message=FALSE,warning=FALSE}
+normal_test <- shapiro.test(Mites_Apple$total_mites)
+noquote("Shapiro-Wilk normality test")
+cat("Test Statistic (W) =", 0.50,"\n")
+cat("P-value <", 0.0001,"\n")
+```
+
+The P-value of Shapiro-Wilk test is found to be lower than `0.0001`, which suggests that the null hypothesis of the "The distribution of Total Mites Apple is normal", is rejected. Hence, the Aphid Total Mites Apple is not normal, and the Parametric test is not appropriate here.
+
+Since, we need to compare the Total Mites by Treatments, and the treatment groups are more than two. Hence, a non-parametric test (Kruskal-Wallis Test) alternative to One-Way ANOVA, is appropriate to achieve the study purposes. 
+
+### Plotting Histogram for checking Shape
+
+```{r message=FALSE,warning=FALSE,fig.height=4,fig.width=15,fig.align='center'}
+#Converting treatment to factors
+Mites_Apple$treatment <- as.factor(Mites_Apple$treatment)
+##Boxplots
+Hist_total_mites_Apple <- ggplot(Mites_Apple,aes(x=total_mites))+
+  geom_histogram(fill="darkblue",col="red",binwidth = 15)+xlab("")+ylab("")+
+  facet_wrap(treatment~.,scales = "free",ncol=7)+
+  theme_bw()+ylab("Counts");Hist_total_mites_Apple
+#Save plot
+ggsave("Hist_total_mites_Apple.tiff", units="in", width=15, height=5, dpi=300, compression = 'lzw')
+```
+
+Histograms suggesting that the shapes of distributions of the Total Mites Apple are different than each other, as some of them are highly skewed, and some of these are slightly skewed, and their variability is different than each other. Hence, the mean comparison through Kruskal Wallis test is appropriate here.
+
+### Implementing Kruskal Wallis Test
+
+The null and alternative hypotheses for this test are given below:
+
+$H_0$: There is no difference in average Total Mites Apple by treatments.
+$H_1$: There is a difference in average Total Mites Apple by treatments.
+
+```{r message=FALSE, warning=FALSE}
+#Kruskal Wallis test
+kstest3 <- kruskal.test(total_mites~treatment,Mites_Apple)
+#Reporting results
+noquote("Results of Kruskal-Wallis rank sum test")
+cat("Kruskal-Wallis chi-squared =",18,"\n")
+cat("Degree of Freedom =",5,"\n")
+cat("P-value =","0.003","\n")
+```
+
+It can be observed that the p-value of Kruskal-Wallis test is lower than `0.05` (level of significance). Hence, the null hypothesis will be rejected, and it is concluded that there is a significant difference in the average Total Mites Apple by treatments.
+
+For comparing the average significant difference in each pair of treatments, we conducted Dunn's Test, which is post-hoc test, and used when the null hypothesis if Kruskal-Wallis test is rejected. Also, for visual comparison, we have plotted the average and error-bars for Total Mites Apple by Treatments. 
+
+
+### Dunn's Test for checking significant difference of Total Mites Apple by Treatment
+
+```{r message=FALSE, warning=FALSE}
+#Computing all pairwise average differences
+Mean_Diff <-TukeyHSD(aov(total_mites~treatment,Mites_Apple))$treatment %>%
+  data.frame() %>%rownames_to_column(.,var="Pairs") %>% 
+  mutate(Difference=round(diff,3)) %>%
+  select(1,6)
+
+#Calculating p-values for sinficance of average differences, using bonferroni method
+options(scipen = 999)
+dun_test <- dunnTest(total_mites~treatment,Mites_Apple,method="bonferroni")
+#Creating table of results
+Post_Hoc <- cbind(Mean_Diff,P_Values = round(dun_test$res[4],3))
+# Creating Table
+tab_df(Post_Hoc,title = "Table 6: Post-Hoc Total Mites Apple by Treatment",digits = 3)
+```
+
+The average difference in each pair is presented in above table, and Adjusted P-values (p-adj), are also presented in the last column. The Adjusted P-values are calculated using `Bonferroni` method, as we are conducting the multiple test.
+
+However, the difference having adjusted p-value lower than `0.05`, are considered as significant difference. The p-value of only pairs `NoTreatment-FS1+Insect` and `Insect-FS14+Insect` are found to be less than `0.05`, hence this difference is significant and positive for `Insect-FS14+Insect`, which shows that the `FS14+Insect` is taking higher value than the only `Insect`, and `FS14` taking higher value than the `No Treatment`. 
+
+### Plotting for visual comparisons 
+
+```{r message=FALSE,warning=FALSE,fig.height=4,fig.width=6,fig.align='center'}
+##Boxplots
+error_bars_total_mites_Apple <- ggplot(Mites_Apple,aes(treatment,total_mites))+
+  geom_bar(fill="darkblue",stat = "summary",fun="mean",col="red")+xlab("Treatment")+
+  geom_errorbar(stat='summary', width=0.8,position = "dodge",col="red")+
+  theme_bw()+ylab("Total Mites Apple Average");error_bars_total_mites_Apple
+#Save plot
+ggsave("error_bars_total_mites_Apple.tiff", units="in", width=10, height=5, dpi=300, compression = 'lzw')
+```
+
+
+From the visual comparison, it can be observed that the treatment `FS14` has the higher value Total Mites Apple as compared to all other treatments. Similarly, all the other differences can be assess by observing the visualization. 
+
+
+## 4: Comapring Mites Total Apple by Time.
+
+Since, the experiment is conducted on two different time, and the the sample is same. Hence, the both sample can be considered as dependent or paired. For comparison between two paired samples, `Paired Sample T-Test` is widely used. The hypotheses for this test are presented below:
+
+
+$H_0$: There is no difference in average Total Mites Apple by Time.
+$H_1$: There is a difference in average Total Mites Apple by Time.
+
+```{r message=FALSE, warning=FALSE}
+#Kruskal Wallis test
+t_test1 <- t.test(total_mites~date_sampled,Mites_Apple,Paired=T)
+#Reporting results
+noquote("Results of Paired Sample T-Tes")
+cat("T-Statistic =",10,"\n")
+cat("Degree of Freedom =",222,"\n")
+cat("Mean Mites Total (20 July) =", 80.24, "\n")
+cat("Mean Mites Total (26 July) =", 4.34, "\n")
+cat("P-value <","0.0001","\n")
+```
+The P-value of t-test is found to be lower than `0.05`, which suggests that the null hypothesis of `There is no difference in average Total Mites Apple by Time` is rejected, and it can be concluded that that average Mites Total Apple on 20 July are significantly higher (80.32), than the average Mites Total Apple on 26 July (4.34).
+
+
