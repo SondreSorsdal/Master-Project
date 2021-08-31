@@ -1,5 +1,5 @@
 ---
-title: "Statistic Task"
+title: ""
 author: "Sondre Kaastad Soersdal"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output:
@@ -112,8 +112,16 @@ Mean_Diff <-TukeyHSD(aov(aphid_shoots~treatment,Aphid_shoots_Apple))$treatment %
 #Calculating p-values for sinficance of average differences, using bonferroni method
 options(scipen = 999)
 dun_test <- dunnTest(aphid_shoots~treatment,Aphid_shoots_Apple,method="bonferroni")
+
+#creating vector of p.adjusted so that it fits the arrangement of Mean_Diff
+P.adj <-c(0.009157047, 1.000000000,	1.000000000,	1.000000000, 1.000000000, 0.387917952, 0.785197788,	0.446497930, 0.002122876,	1.000000000,	1.000000000,	0.705338904, 1.000000000,	0.394998966, 1.000000000)	
 #Creating table of results
-Post_Hoc <- cbind(Mean_Diff,P_Values = round(dun_test$res[4],4))
+Post_Hoc <- cbind(Mean_Diff, P.adj = P.adj)
+
+#Filtering out unrelevant pairings
+Post_Hoc <- Post_Hoc %>% 
+  filter(Pairs %in% c("FS14-FS1", "NoTreatment-FS1", "FS14+Insect-FS1+Insect", "Insect-FS1+Insect", "NoTreatment-FS14", "Insect-FS14+Insect"))
+
 # Creating Table
 tab_df(Post_Hoc,title = "Table 2: Post-Hoc Aphid Shoots Apple by Treatment",digits = 3)
 ```
@@ -227,8 +235,17 @@ Mean_Diff <-TukeyHSD(aov(aphid_population~treatment,Aphid_population_Apple))$tre
 #Calculating p-values for sinficance of average differences, using bonferroni method
 options(scipen = 999)
 dun_test <- dunnTest(aphid_population~treatment,Aphid_population_Apple,method="bonferroni")
+
+#creating vector of p.adjusted so that it fits the arrangement of Mean_Diff
+P.adj <-c(0.2699941166641,	1.0000000000000, 0.8687009519417,	0.1323470012886, 0.0114705134285, 1.0000000000000,	1.0000000000000,	0.0000093203416,	0.0000001498562, 1.0000000000000,	0.0056289480212,	0.0002523764117,	0.0000948922286, 0.0000021418956, 1.0000000000000)	
 #Creating table of results
-Post_Hoc <- cbind(Mean_Diff,P_Values = round(dun_test$res[4],3))
+Post_Hoc <- cbind(Mean_Diff, P.adj = P.adj)
+
+#Filtering out unrelevant pairings
+Post_Hoc <- Post_Hoc %>% 
+  filter(Pairs %in% c("FS14-FS1", "NoTreatment-FS1", "FS14+Insect-FS1+Insect", "Insect-FS1+Insect", "NoTreatment-FS14", "Insect-FS14+Insect"))
+
+
 # Creating Table
 tab_df(Post_Hoc,title = "Table 4: Post-Hoc Aphid Population Apple by Treatment",digits = 3)
 ```
@@ -257,6 +274,10 @@ From the visual comparison, it can be observed that the treatment `FS1+Insect` h
 # Mites_Apple data
 Mites_Apple <- read_excel("Appletrees_insects_v2.xlsx",
                                 sheet="Mites_apple")
+
+#Filtering out the second date
+Mites_Apple <- Mites_Apple %>% 
+  filter(Mites_Apple$date_sampled == as.Date("2021-07-20"))
 ```
 
 ### Descriptive statistics of Mites Total by Treatment
@@ -316,6 +337,7 @@ $H_1$: There is a difference in average Total Mites Apple by treatments.
 ```{r message=FALSE, warning=FALSE}
 #Kruskal Wallis test
 kstest3 <- kruskal.test(total_mites~treatment,Mites_Apple)
+kstest3
 #Reporting results
 noquote("Results of Kruskal-Wallis rank sum test")
 cat("Kruskal-Wallis chi-squared =",18,"\n")
