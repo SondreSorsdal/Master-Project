@@ -51,7 +51,8 @@ aphid_shoots_mean <- data.frame(Aphid_shoots_plum %>%
                                             Maximum =max(aphid_shoots)))
 #Table average of Aphid Shots by treatment
 tab_df(aphid_shoots_mean,
-       title = "Table 1: Descriptive Statistics of Aphid Shoots Plum by Treatment")
+       title = "Table 3: Descriptive Statistics of Aphid Shoots on Plum trees in relation to Treatment")
+
 ```
 
 ### Checking Normality of Aphid Shoots Plum 
@@ -116,15 +117,30 @@ For comparing the average significant difference in each pair of treatments, we 
 Mean_Diff <-TukeyHSD(aov(aphid_shoots~treatment,Aphid_shoots_plum))$treatment %>%
   data.frame() %>%rownames_to_column(.,var="Pairs") %>% 
   mutate(Difference=round(diff,3)) %>%
-  select(1,6)
+  select(1,6) 
 
 #Calculating p-values for sinficance of average differences, using bonferroni method
 options(digits = 3,scipen = 999)
-dun_test <- dunnTest(aphid_shoots~treatment,Aphid_shoots_plum,method="bonferroni")
+dun_test <- dunnTest(aphid_shoots~treatment,Aphid_shoots_plum,method="bonferroni", list = TRUE)
+
+#creating vector of p.adjusted so that it fits the arrangement of Mean_Diff
+P.adj <- c(1.000000000000000000000000000000, 0.000000000000000000530110704691, 0.000000000000000000000000000472, 0.000000000000000203179636004859, 0.000000000000000014024194608921, 0.000000000000000007626269892446, 0.000000000000000000000000012160, 0.000000000000002016630854689484, 0.000000000000000181981783235854,
+0.648330939055542621041183792840,	1.000000000000000000000000000000, 1.000000000000000000000000000000, 0.961530744426840500160835745191,	0.259475509665134884684789540188,	1.000000000000000000000000000000)
+
 #Creating table of results
-Post_Hoc <- cbind(Mean_Diff,P_Values = round(dun_test$res[4],4))
+Post_Hoc <- cbind(Mean_Diff, P.adj = P.adj)
+
+#Filtering out unrelevant pairings
+Post_Hoc <- Post_Hoc %>% 
+  filter(Pairs %in% c("2-1", "6-1", "6-2", "5-4", "7-4", "7-5"))
+
+
 # Creating Table
-tab_df(Post_Hoc,title = "Table 2: Post-Hoc Aphid Shoots Plum by Treatment",digits = 3)
+tab_df(Post_Hoc,title = "Table 4: Post-Hoc Aphid Shoots Plum by Treatment",digits = 3)
+
+
+
+
 ```
 
 The average difference in each pair is presented in above table, and Adjusted P-values (p-adj), are also presented in the last column. The Adjusted P-values are calculated using `Bonferroni` method, as we are conducting the multiple test.
@@ -246,10 +262,25 @@ Mean_Diff <-TukeyHSD(aov(aphid_population~treatment,Aphid_population_plum))$trea
 #Calculating p-values for sinficance of average differences, using bonferroni method
 options(digits = 3,scipen = 999)
 dun_test <- dunnTest(aphid_population~treatment,Aphid_population_plum,method="bonferroni")
+
+
+#creating vector of p.adjusted so that it fits the arrangement of Mean_Diff
+P.adj <- c(1.000000000000000000000000000, 0.000000000000000000247233569, 0.000000000000000000000000177, 0.000000000000000000000000125, 0.000000000000000000002121168, 0.000000000000000000247627867, 0.000000000000000000000000177, 0.000000000000000000000000126, 0.000000000000000000002124734, 1.000000000000000000000000000, 0.505205508010164061616364961, 1.000000000000000000000000000, 1.000000000000000000000000000, 1.000000000000000000000000000, 1.000000000000000000000000000)
+
 #Creating table of results
-Post_Hoc <- cbind(Mean_Diff,P_Values = round(dun_test$res[4],3))
+Post_Hoc <- cbind(Mean_Diff, P.adj = P.adj)
+
+#Filtering out unrelevant pairings
+Post_Hoc <- Post_Hoc %>% 
+  filter(Pairs %in% c("2-1", "6-1", "6-2", "5-4", "7-4", "7-5"))
+
 # Creating Table
 tab_df(Post_Hoc,title = "Table 4: Post-Hoc Aphid Population Plum by Treatment",digits = 3)
+
+
+
+
+
 ```
 
 The average difference in each pair is presented in above table, and Adjusted P-values (p-adj), are also presented in the last column. The Adjusted P-values are calculated using `Bonferroni` method, as we are conducting the multiple test.
@@ -367,8 +398,14 @@ Mean_Diff <-TukeyHSD(aov(total_mites~treatment,Mites_plum))$treatment %>%
 #Calculating p-values for sinficance of average differences, using bonferroni method
 options(digits = 3,scipen = 999)
 dun_test <- dunnTest(total_mites~treatment,Mites_plum,method="bonferroni")
+
+
+#creating vector of p.adjusted so that it fits the arrangement of Mean_Diff
+P.adj <- c(1.0000, 1.0000, 0.4772, 0.0810, 1.0000, 1.0000, 0.0913, 0.0127, 1.0000, 1.0000, 0.3748, 1.0000, 1.0000, 1.0000, 0.2200)
+
 #Creating table of results
-Post_Hoc <- cbind(Mean_Diff,P_Values = round(dun_test$res[4],3))
+Post_Hoc <- cbind(Mean_Diff, P.adj = P.adj)
+
 # Creating Table
 tab_df(Post_Hoc,title = "Table 6: Post-Hoc Total Mites Plum by Treatment",digits = 3)
 ```
@@ -489,10 +526,20 @@ Mean_Diff <-TukeyHSD(aov(aphid_shoots~treatment,Aphid_shoots_plum))$treatment %>
 #Calculating p-values for sinficance of average differences, using bonferroni method
 options(digits = 3,scipen = 999)
 dun_test <- dunnTest(aphid_shoots~treatment,Aphid_shoots_plum,method="bonferroni")
+
 #Creating table of results
 Post_Hoc <- cbind(Mean_Diff,P_Values = round(dun_test$res[4],4))
+
+#Filtering out unrelevant pairings
+Post_Hoc <- Post_Hoc %>% 
+  filter(Pairs %in% c("3-1", "9-8"))
+
 # Creating Table
 tab_df(Post_Hoc,title = "Table 2: Post-Hoc Aphid Shoots Plum by Treatment",digits = 3)
+
+
+
+
 ```
 
 The average difference in each pair is presented in above table, and Adjusted P-values (p-adj), are also presented in the last column. The Adjusted P-values are calculated using `Bonferroni` method, as we are conducting the multiple test.
@@ -611,6 +658,9 @@ options(digits = 3,scipen = 999)
 dun_test <- dunnTest(aphid_population~treatment,Aphid_population_plum,method="bonferroni")
 #Creating table of results
 Post_Hoc <- cbind(Mean_Diff,P_Values = round(dun_test$res[4],3))
+#Filtering out unrelevant pairings
+Post_Hoc <- Post_Hoc %>% 
+  filter(Pairs %in% c("3-1", "9-8"))
 # Creating Table
 tab_df(Post_Hoc,title = "Table 4: Post-Hoc Aphid Population Plum by Treatment",digits = 3)
 ```
@@ -725,8 +775,11 @@ Mean_Diff <-TukeyHSD(aov(total_mites~treatment,Mites_plum))$treatment %>%
 #Calculating p-values for sinficance of average differences, using bonferroni method
 options(digits = 3,scipen = 999)
 dun_test <- dunnTest(total_mites~treatment,Mites_plum,method="bonferroni")
+
+#creating vector of p.adjusted so that it fits the arrangement of Mean_Diff
+P.adj <- c(0.18064, 0.00958,	0.00858, 1.00000, 1.00000, 1.00000)
 #Creating table of results
-Post_Hoc <- cbind(Mean_Diff,P_Values = round(dun_test$res[4],3))
+Post_Hoc <- cbind(Mean_Diff, P.adj = P.adj)
 # Creating Table
 tab_df(Post_Hoc,title = "Table 6: Post-Hoc Total Mites Plum by Treatment",digits = 3)
 ```
