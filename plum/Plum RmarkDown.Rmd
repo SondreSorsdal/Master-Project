@@ -123,7 +123,7 @@ Mean_Diff <-TukeyHSD(aov(aphid_shoots~treatment,Aphid_shoots_plum))$treatment %>
   mutate(Difference=round(diff,3)) %>%
   select(1,6) 
 
-#Calculating p-values for sinficance of average differences, using bonferroni method
+#Calculating p-values for signficance of average differences, using bonferroni method
 options(digits = 3,scipen = 999)
 dun_test <- dunnTest(aphid_shoots~treatment,Aphid_shoots_plum,method="bonferroni", list = TRUE)
 
