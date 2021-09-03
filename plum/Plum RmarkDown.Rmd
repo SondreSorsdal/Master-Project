@@ -38,6 +38,10 @@ Aphid_shoots_plum  <- Aphid_shoots_plum  %>%
   filter(treatment <= 7) %>%
   filter(replica !=5 | treatment > 2) %>%
   filter(replica != 3 | treatment != 6)
+
+#If rename treatments
+# %>%   mutate(treatment=dplyr::recode(treatment, '1' = "GT", '2' = "GT+FS14", '4' = "GT+Insect", '5' = "GT+FS14+Insect", '6' = "GT+FS1", '7' = "GT+FS1+Insect" ))
+   
 ```
 
 ### Descriptive statistics of Aphid Shoots by Treatment
