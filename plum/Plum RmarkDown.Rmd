@@ -123,7 +123,7 @@ Mean_Diff <-TukeyHSD(aov(aphid_shoots~treatment,Aphid_shoots_plum))$treatment %>
 options(digits = 3,scipen = 999)
 dun_test <- dunnTest(aphid_shoots~treatment,Aphid_shoots_plum,method="bonferroni", list = TRUE)
 
-#creating vector of p.adjusted so that it fits the arrangement of Mean_Diff
+#creating vector of p.adjusted from dun_test so that it fits the arrangement of Mean_Diff
 P.adj <- c(1.000000000000000000000000000000, 0.000000000000000000530110704691, 0.000000000000000000000000000472, 0.000000000000000203179636004859, 0.000000000000000014024194608921, 0.000000000000000007626269892446, 0.000000000000000000000000012160, 0.000000000000002016630854689484, 0.000000000000000181981783235854,
 0.648330939055542621041183792840,	1.000000000000000000000000000000, 1.000000000000000000000000000000, 0.961530744426840500160835745191,	0.259475509665134884684789540188,	1.000000000000000000000000000000)
 
@@ -155,7 +155,7 @@ However, the difference having adjusted p-value lower than `0.05`, are considere
 error_bars_aphid_shoots_plum <- ggplot(Aphid_shoots_plum,aes(treatment,aphid_shoots))+
   geom_bar(fill="darkblue",stat = "summary",fun="mean",col="red")+xlab("Treatment")+
   geom_errorbar(stat='summary', width=0.8,position = "dodge",col="red")+
-  theme_bw()+ylab("APhid Shots Plum Average");error_bars_aphid_shoots_plum
+  theme_bw()+ylab("Mean number of Aphid Shoots");error_bars_aphid_shoots_plum
 #Save plot
 ggsave("error_bars_aphid_shoots_plum_1.1.tiff", units="in", width=10, height=5, dpi=300, compression = 'lzw')
 ```
@@ -168,7 +168,7 @@ From the visual comparison, it can be observed that the tretment `5` has the hig
 # Aphid_population_plum data
 Aphid_population_plum <- read_excel("Plumtrees_insects.xlsx",
                                 sheet="Aphid_population_plum")
-#Including tretement 1,2,4,5,6,7
+#Including treatment 1,2,4,5,6,7
 #Filtering  Replica #5 for treatment 1 and 2
 #Filtering Replica #3 and treatment 6
 Aphid_population_plum  <- Aphid_population_plum  %>%
@@ -176,6 +176,7 @@ Aphid_population_plum  <- Aphid_population_plum  %>%
   filter(treatment <= 7) %>%
   filter(replica !=5 | treatment > 2) %>%
   filter(replica != 3 | treatment != 6)
+
 ```
 
 
@@ -190,7 +191,7 @@ aphid_population_mean <- data.frame(Aphid_population_plum %>%
                                             Maximum =max(aphid_population)))
 #Table average of Aphid Shots by treatment
 tab_df(aphid_population_mean,
-       title = "Table 3: Descriptive Statistics of Aphid Population Plum by Treatment")
+       title = "Table 5: Descriptive Statistics of Aphid Population on Plum trees in relation to Treatment")
 ```
 
 
@@ -262,6 +263,7 @@ Mean_Diff <-TukeyHSD(aov(aphid_population~treatment,Aphid_population_plum))$trea
 #Calculating p-values for sinficance of average differences, using bonferroni method
 options(digits = 3,scipen = 999)
 dun_test <- dunnTest(aphid_population~treatment,Aphid_population_plum,method="bonferroni")
+dun_test
 
 
 #creating vector of p.adjusted so that it fits the arrangement of Mean_Diff
@@ -275,7 +277,7 @@ Post_Hoc <- Post_Hoc %>%
   filter(Pairs %in% c("2-1", "6-1", "6-2", "5-4", "7-4", "7-5"))
 
 # Creating Table
-tab_df(Post_Hoc,title = "Table 4: Post-Hoc Aphid Population Plum by Treatment",digits = 3)
+tab_df(Post_Hoc,title = "Table 6: Post-Hoc of Aphid Population by Treatment",digits = 3)
 
 
 
@@ -294,7 +296,7 @@ However, the difference having adjusted p-value lower than `0.05`, are considere
 error_bars_Aphid_Population_plum <- ggplot(Aphid_population_plum,aes(treatment,aphid_population))+
   geom_bar(fill="darkblue",stat = "summary",fun="mean",col="red")+xlab("Treatment")+
   geom_errorbar(stat='summary', width=0.8,position = "dodge",col="red")+
-  theme_bw()+ylab("Aphid Population Plum Average");error_bars_Aphid_Population_plum
+  theme_bw()+ylab("Mean Population count of Aphids");error_bars_Aphid_Population_plum
 #Save plot
 ggsave("error_bars_Aphid_Population_plum.tiff", units="in", width=10, height=5, dpi=300, compression = 'lzw')
 ```
@@ -554,7 +556,7 @@ However, the difference having adjusted p-value lower than `0.05`, are considere
 error_bars_aphid_shoots_plum <- ggplot(Aphid_shoots_plum,aes(treatment,aphid_shoots))+
   geom_bar(fill="darkblue",stat = "summary",fun="mean",col="red")+xlab("Treatment")+
   geom_errorbar(stat='summary', width=0.8,position = "dodge",col="red")+
-  theme_bw()+ylab("APhid Shots Plum Average");error_bars_aphid_shoots_plum
+  theme_bw()+ylab("Mean number of Aphid Shoots");error_bars_aphid_shoots_plum
 #Save plot
 ggsave("error_bars_aphid_shoots_plum_1.2.tiff", units="in", width=10, height=5, dpi=300, compression = 'lzw')
 ```
