@@ -307,7 +307,7 @@ ggsave("error_bars_Aphid_Population_plum.tiff", units="in", width=10, height=5, 
 
 From the visual comparison, it can be observed that the treatment `6` has the higher value Aphid Shoots Plum as compared to all other treatments. Similarly, all the other differences can be asses by observing the visualization. 
 
-## 3: Comparing the Aphid Mites Plum for each treatment
+## 3: Comparing the Aphid Mites Plum for each treatment - for sprayed frass and soil
 
 ```{r message=FALSE, warning=FALSE}
 # Mites_plum data
@@ -317,10 +317,33 @@ Mites_plum <- read_excel("Plumtrees_insects.xlsx",
 #Filtering  Replica #5 for treatment 1 and 2
 #Filtering Replica #3 and treatment 6
 Mites_plum  <- Mites_plum %>%
-  filter(treatment != 3) %>%
-  filter(treatment <= 7) %>%
-  filter(replica !=5 | treatment > 2) %>%
-  filter(replica != 3 | treatment != 6)
+  filter(replica != 3 | treatment != 6) %>% 
+  select(treatment, total_mites) %>% 
+  mutate(treatment = as_factor(treatment)) 
+
+levels(Mites_plum$treatment)[levels (Mites_plum$treatment)=="1"] <-"No_treatment"
+levels(Mites_plum$treatment)[levels (Mites_plum$treatment)=="4"] <-"No_treatment"
+levels(Mites_plum$treatment)[levels (Mites_plum$treatment)=="2"] <-"FS14"
+levels(Mites_plum$treatment)[levels (Mites_plum$treatment)=="5"] <-"FS14"
+levels(Mites_plum$treatment)[levels (Mites_plum$treatment)=="6"] <-"FS1"
+levels(Mites_plum$treatment)[levels (Mites_plum$treatment)=="7"] <-"FS1"
+levels(Mites_plum$treatment)[levels (Mites_plum$treatment)=="8"] <-"No_treatment"
+levels(Mites_plum$treatment)[levels (Mites_plum$treatment)=="1"] <-"No_treatment"
+levels(Mites_plum$treatment)[levels (Mites_plum$treatment)=="9"] <-"FT"
+levels(Mites_plum$treatment)[levels (Mites_plum$treatment)=="3"] <-"FT"
+  
+  
+#Including tretement 1,2,4,5,6,7
+#Filtering  Replica #5 for treatment 1 and 2
+#Filtering Replica #3 and treatment 6
+#Mites_plum  <- Mites_plum %>%
+#  filter(treatment != 3) %>%
+#  filter(treatment <= 7) %>%
+#  filter(replica !=5 | treatment > 2) %>%
+#  filter(replica != 3 | treatment != 6) %>% 
+#  select(treatment, total_mites) %>% 
+#  mutate(treatment = as_factor(treatment)) 
+
 ```
 
 ### Descriptive statistics of Mites Total by Treatment
@@ -346,7 +369,7 @@ $H_1$: The distribution of Total Mites Plum is not normal.
 ```{r message=FALSE,warning=FALSE}
 normal_test <- shapiro.test(Mites_plum$total_mites)
 noquote("Shapiro-Wilk normality test")
-cat("Test Statistic (W) =", 0.60,"\n")
+cat("Test Statistic (W) =", 0.50,"\n")
 cat("P-value <", 0.0001,"\n")
 ```
 
@@ -382,9 +405,9 @@ $H_1$: There is a difference in average Total Mites Plum by treatments.
 kstest3 <- kruskal.test(total_mites~treatment,Mites_plum)
 #Reporting results
 noquote("Results of Kruskal-Wallis rank sum test")
-cat("Kruskal-Wallis chi-squared =",17,"\n")
+cat("Kruskal-Wallis chi-squared =",6,"\n")
 cat("Degree of Freedom =",5,"\n")
-cat("P-value <","0.005","\n")
+cat("P-value <","0.1","\n")
 ```
 
 It can be observed that the p-value of Kruskal-Wallis test is lower than `0.05` (level of significance). Hence, the null hypothesis will be rejected, and it is concluded that there is a significant difference in the average Total Mites Plum by treatments.
@@ -407,7 +430,8 @@ dun_test <- dunnTest(total_mites~treatment,Mites_plum,method="bonferroni")
 
 
 #creating vector of p.adjusted so that it fits the arrangement of Mean_Diff
-P.adj <- c(1.0000, 1.0000, 0.4772, 0.0810, 1.0000, 1.0000, 0.0913, 0.0127, 1.0000, 1.0000, 0.3748, 1.0000, 1.0000, 1.0000, 0.2200)
+P.adj <- c(1.000, 0.215, 1.000, 0.262, 1.000, 1.000	)
+#P.adj <- c(1.0000, 1.0000, 0.4772, 0.0810, 1.0000, 1.0000, 0.0913, 0.0127, 1.0000, 1.0000, 0.3748, 1.0000, 1.0000, 1.0000, 0.2200)
 
 #Creating table of results
 Post_Hoc <- cbind(Mean_Diff, P.adj = P.adj)
@@ -427,7 +451,7 @@ However, the difference having adjusted p-value lower than `0.05`, are considere
 error_bars_total_mites_plum <- ggplot(Mites_plum,aes(treatment,total_mites))+
   geom_bar(fill="darkblue",stat = "summary",fun="mean",col="red")+xlab("Treatment")+
   geom_errorbar(stat='summary', width=0.8,position = "dodge",col="red")+
-  theme_bw()+ylab("Total Mites Plum Average");error_bars_total_mites_plum
+  theme_bw()+ylab("Total Mite population");error_bars_total_mites_plum
 #Save plot
 ggsave("error_bars_total_mites_plum_1.1.tiff", units="in", width=10, height=5, dpi=300, compression = 'lzw')
 ```
@@ -682,14 +706,14 @@ However, the difference having adjusted p-value lower than `0.05`, are considere
 error_bars_Aphid_Population_plum <- ggplot(Aphid_population_plum,aes(treatment,aphid_population))+
   geom_bar(fill="darkblue",stat = "summary",fun="mean",col="red")+xlab("Treatment")+
   geom_errorbar(stat='summary', width=0.8,position = "dodge",col="red")+
-  theme_bw()+ylab("Aphid Population Plum Average");error_bars_Aphid_Population_plum
+  theme_bw()+ylab("Mean Population count of Aphids");error_bars_Aphid_Population_plum
 #Save plot
 ggsave("error_bars_Aphid_Population_plum_1.2.tiff", units="in", width=10, height=5, dpi=300, compression = 'lzw')
 ```
 
 From the visual comparison, it can be observed that the treatment `9` has the higher value Aphid Shoots Plum as compared to all other treatments. Similarly, all the other differences can be asses by observing the visualization. 
 
-## 3: Comparing the Aphid Mites Plum for each treatment
+## 3: Comparing the Aphid Mites Plum for each treatment !!! Redone together with sprayed frass - keeping this in case I need to redo
 
 ```{r message=FALSE, warning=FALSE}
 # Mites_plum data
@@ -697,7 +721,18 @@ Mites_plum <- read_excel("Plumtrees_insects.xlsx",
                                 sheet="Mites_plum")
 #Only taking treatment 1,3,8, and 9
 Mites_plum <- Mites_plum  %>%
-  filter(treatment == 1|treatment == 3|treatment == 8|treatment == 9) 
+  filter(treatment == 1|treatment == 3|treatment == 8|treatment == 9) %>% 
+  select(treatment, total_mites) %>% 
+  mutate(treatment = as_factor(treatment)) 
+
+levels(Mites_plum$treatment)[levels (Mites_plum$treatment)=="8"] <-"No_treatment"
+levels(Mites_plum$treatment)[levels (Mites_plum$treatment)=="1"] <-"No_treatment"
+levels(Mites_plum$treatment)[levels (Mites_plum$treatment)=="9"] <-"FT"
+levels(Mites_plum$treatment)[levels (Mites_plum$treatment)=="3"] <-"FT"
+
+
+
+
 ```
 
 ### Descriptive statistics of Mites Total by Treatment
@@ -757,6 +792,7 @@ $H_1$: There is a difference in average Total Mites Plum by treatments.
 ```{r message=FALSE, warning=FALSE}
 #Kruskal Wallis test
 kstest3 <- kruskal.test(total_mites~treatment,Mites_plum)
+kstest3
 #Reporting results
 noquote("Results of Kruskal-Wallis rank sum test")
 cat("Kruskal-Wallis chi-squared =",13,"\n")
@@ -788,6 +824,8 @@ P.adj <- c(0.18064, 0.00958,	0.00858, 1.00000, 1.00000, 1.00000)
 Post_Hoc <- cbind(Mean_Diff, P.adj = P.adj)
 # Creating Table
 tab_df(Post_Hoc,title = "Table 6: Post-Hoc Total Mites Plum by Treatment",digits = 3)
+
+
 ```
 
 The average difference in each pair is presented in above table, and Adjusted P-values (p-adj), are also presented in the last column. The Adjusted P-values are calculated using `Bonferroni` method, as we are conducting the multiple test.
@@ -801,13 +839,12 @@ However, the difference having adjusted p-value lower than `0.05`, are considere
 error_bars_total_mites_plum <- ggplot(Mites_plum,aes(treatment,total_mites))+
   geom_bar(fill="darkblue",stat = "summary",fun="mean",col="red")+xlab("Treatment")+
   geom_errorbar(stat='summary', width=0.8,position = "dodge",col="red")+
-  theme_bw()+ylab("Total Mites Plum Average");error_bars_total_mites_plum
+  theme_bw()+ylab("Total Mite Population");error_bars_total_mites_plum
 #Save plot
 ggsave("error_bars_total_mites_plum_1.2.tiff", units="in", width=10, height=5, dpi=300, compression = 'lzw')
 ```
 
 
-From the visual comparison, it can be observed that the treatment `9` has the higher value Total Mites Plum as compared to all other treatments. Similarly, all the other differences can be assess by observing the visualization. 
 
 
 

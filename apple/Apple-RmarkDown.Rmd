@@ -138,7 +138,7 @@ However, the difference having adjusted p-value lower than `0.05`, are considere
 error_bars_aphid_shoots_Apple <- ggplot(Aphid_shoots_Apple,aes(treatment,aphid_shoots))+
   geom_bar(fill="darkblue",stat = "summary",fun="mean",col="red")+xlab("Treatment")+
   geom_errorbar(stat='summary', width=0.8,position = "dodge",col="red")+
-  theme_bw()+ylab("APhid Shots Apple Average");error_bars_aphid_shoots_Apple
+  theme_bw()+ylab("Mean number of Aphid Shoots");error_bars_aphid_shoots_Apple
 #Save plot
 ggsave("error_bars_aphid_shoots_Apple.tiff", units="in", width=10, height=5, dpi=300, compression = 'lzw')
 ```
