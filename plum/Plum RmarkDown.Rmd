@@ -19,6 +19,8 @@ pacman::p_load(tidyverse, car,knitr,sjPlot,sjmisc,DescTools,
 #Setting options - alter to your working directory
 opts_knit$set(root.dir = "C:/Users/Sondre/Documents/Master/Master-Project/plum")
 options(knitr.kable.NA = '')
+
+
 ```
 
 
@@ -41,6 +43,12 @@ Aphid_shoots_plum  <- Aphid_shoots_plum  %>%
 
 #If rename treatments
 # %>%   mutate(treatment=dplyr::recode(treatment, '1' = "GT", '2' = "GT+FS14", '4' = "GT+Insect", '5' = "GT+FS14+Insect", '6' = "GT+FS1", '7' = "GT+FS1+Insect" ))
+
+
+#exporting dataset for use in Minitab
+
+write.xlsx(Aphid_shoots_plum, "spray_frass_plum")
+
    
 ```
 
@@ -57,6 +65,14 @@ aphid_shoots_mean <- data.frame(Aphid_shoots_plum %>%
 tab_df(aphid_shoots_mean,
        title = "Table 3: Descriptive Statistics of Aphid Shoots on Plum trees in relation to Treatment")
 
+
+
+#Below is the script for manipulating the data for use in Minitab for creating the time series graph. 
+
+#datasheet for minitab_1 <- data.frame(Aphid_shoots_plum %>%
+#                                  group_by(treatment, date) %>%
+#                                  summarise(Mean = mean(aphid_shoots)))
+#                                            
 ```
 
 ### Checking Normality of Aphid Shoots Plum 
@@ -144,7 +160,6 @@ tab_df(Post_Hoc,title = "Table 4: Post-Hoc Aphid Shoots Plum by Treatment",digit
 
 
 
-
 ```
 
 The average difference in each pair is presented in above table, and Adjusted P-values (p-adj), are also presented in the last column. The Adjusted P-values are calculated using `Bonferroni` method, as we are conducting the multiple test.
@@ -164,7 +179,8 @@ error_bars_aphid_shoots_plum <- ggplot(Aphid_shoots_plum,aes(treatment,aphid_sho
 ggsave("error_bars_aphid_shoots_plum_1.1.tiff", units="in", width=10, height=5, dpi=300, compression = 'lzw')
 ```
 
-From the visual comparison, it can be observed that the tretment `5` has the higher value Aphid Shoots Plum as compared to all other treatments. Similarly, all the other differences can be asses by observing the visualization. 
+
+From the visual comparison, it can be observed that the treatment `5` has the higher value Aphid Shoots Plum as compared to all other treatments. Similarly, all the other differences can be asses by observing the visualization. 
 
 ## 2: Comparing the Aphid population Plum by treatment
 
@@ -180,6 +196,14 @@ Aphid_population_plum  <- Aphid_population_plum  %>%
   filter(treatment <= 7) %>%
   filter(replica !=5 | treatment > 2) %>%
   filter(replica != 3 | treatment != 6)
+
+
+#Below is the script for manipulating the data for use in Minitab for creating the time series graph.
+#minitab_2 <- data.frame(Aphid_population_plum %>%
+#                                 group_by(treatment, date) %>%
+ #                                 summarise(Mean = mean(aphid_population)))
+
+#write.xlsx(minitab_2, "for_minitab2")
 
 ```
 
@@ -487,6 +511,15 @@ aphid_shoots_mean <- data.frame(Aphid_shoots_plum %>%
 #Table average of Aphid Shots by treatment
 tab_df(aphid_shoots_mean,
        title = "Table 1: Descriptive Statistics of Aphid Shoots Plum by Treatment")
+
+
+#Below is the script for manipulating the data for use in Minitab for creating the time series graph.
+
+#minitab_3 <- data.frame(Aphid_shoots_plum %>%
+#                                 group_by(treatment, date) %>%
+#                                 summarise(Mean = mean(aphid_shoots)))
+
+#write.xlsx(minitab_3, "for_minitab3")
 ```
 
 ### Checking Normality of Aphid Shoots Plum 
@@ -615,6 +648,14 @@ aphid_population_mean <- data.frame(Aphid_population_plum %>%
 #Table average of Aphid Shots by treatment
 tab_df(aphid_population_mean,
        title = "Table 3: Descriptive Statistics of Aphid Population Plum by Treatment")
+
+
+#Below is the script for manipulating the data for use in Minitab for creating the time series graph.
+minitab_4 <- data.frame(Aphid_population_plum %>%
+                                 group_by(treatment, date) %>%
+                                 summarise(Mean = mean(aphid_population)))
+
+write.xlsx(minitab_4, "for_minitab4")
 ```
 
 
