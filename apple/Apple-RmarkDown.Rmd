@@ -29,6 +29,11 @@ options(knitr.kable.NA = '')
 # Aphid_shoots_Apple data
 Aphid_shoots_Apple <- read_excel("Appletrees_insects_v2.xlsx",
                                 sheet="Aphid_shoots_apple")
+
+
+#exporting dataset for use in Minitab
+
+write.xlsx(Aphid_shoots_Apple, "Spray_frass_apple")
 ```
 
 ### Descriptive statistics of Aphid Shoots by Treatment
@@ -43,6 +48,15 @@ aphid_shoots_mean <- data.frame(Aphid_shoots_Apple %>%
 #Table average of Aphid Shots by treatment
 tab_df(aphid_shoots_mean,
        title = "Table 1: Descriptive Statistics of Aphid Shoots Apple by Treatment")
+
+
+#Below is the script for manipulating the data for use in Minitab for creating the time series graph. 
+
+#minitab_5 <- data.frame(Aphid_shoots_Apple %>%
+#                                  group_by(treatment, date) %>%
+#                                  summarise(Mean = mean(aphid_shoots)))
+#write.xlsx(minitab_5, "minitab_5")
+
 ```
 
 ### Checking Normality of Aphid Shoots Apple 
@@ -151,6 +165,10 @@ From the visual comparison, it can be observed that the treatment `FS1+Insect` h
 # Aphid_population_Apple data
 Aphid_population_Apple <- read_excel("Appletrees_insects_v2.xlsx",
                                 sheet="Aphid_population_apple")
+
+#exporting dataset for use in Minitab
+
+write.xlsx(Aphid_population_Apple, "Spray_frass_apple_population")
 ```
 
 
@@ -166,6 +184,15 @@ aphid_population_mean <- data.frame(Aphid_population_Apple %>%
 #Table average of Aphid Shots by treatment
 tab_df(aphid_population_mean,
        title = "Table 3: Descriptive Statistics of Aphid Population Apple by Treatment")
+
+
+#Below is the script for manipulating the data for use in Minitab for creating the time series graph. 
+
+#minitab_6 <- data.frame(Aphid_population_Apple %>%
+#                                  group_by(treatment, date) %>%
+#                                  summarise(Mean = mean(aphid_population)))
+#write.xlsx(minitab_6, "minitab_6")
+
 ```
 
 

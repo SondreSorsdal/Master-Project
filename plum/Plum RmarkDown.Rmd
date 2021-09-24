@@ -47,7 +47,22 @@ Aphid_shoots_plum  <- Aphid_shoots_plum  %>%
 
 #exporting dataset for use in Minitab
 
-write.xlsx(Aphid_shoots_plum, "spray_frass_plum")
+#write.xlsx(Aphid_shoots_plum, "spray_frass_plum")
+
+
+#exaple on how time series plot is made in R
+#timeseries_test <- read_excel("for_minitab1.xlsx")
+
+#ggplot(timeseries_test) +
+#  aes(
+#    x = date,
+#    y = Mean,
+#    colour = treatment,
+#    group = treatment
+#  ) +
+#  geom_line(size = 0.5) +
+#  scale_color_hue(direction = 1) +
+#  theme_minimal()
 
    
 ```
@@ -151,8 +166,8 @@ P.adj <- c(1.000000000000000000000000000000, 0.000000000000000000530110704691, 0
 Post_Hoc <- cbind(Mean_Diff, P.adj = P.adj)
 
 #Filtering out unrelevant pairings
-Post_Hoc <- Post_Hoc %>% 
-  filter(Pairs %in% c("2-1", "6-1", "6-2", "5-4", "7-4", "7-5"))
+#Post_Hoc <- Post_Hoc %>% 
+ # filter(Pairs %in% c("2-1", "6-1", "6-2", "5-4", "7-4", "7-5"))
 
 
 # Creating Table
@@ -204,6 +219,12 @@ Aphid_population_plum  <- Aphid_population_plum  %>%
  #                                 summarise(Mean = mean(aphid_population)))
 
 #write.xlsx(minitab_2, "for_minitab2")
+
+
+#exporting dataset for use in Minitab
+
+#write.xlsx(Aphid_population_plum, "spray_frass__population_plum")
+
 
 ```
 
@@ -301,8 +322,8 @@ P.adj <- c(1.000000000000000000000000000, 0.000000000000000000247233569, 0.00000
 Post_Hoc <- cbind(Mean_Diff, P.adj = P.adj)
 
 #Filtering out unrelevant pairings
-Post_Hoc <- Post_Hoc %>% 
-  filter(Pairs %in% c("2-1", "6-1", "6-2", "5-4", "7-4", "7-5"))
+#Post_Hoc <- Post_Hoc %>% 
+#  filter(Pairs %in% c("2-1", "6-1", "6-2", "5-4", "7-4", "7-5"))
 
 # Creating Table
 tab_df(Post_Hoc,title = "Table 6: Post-Hoc of Aphid Population by Treatment",digits = 3)
@@ -497,6 +518,10 @@ Aphid_shoots_plum <- read_excel("Plumtrees_insects.xlsx",
 #Only taking treatment 1,3,8, and 9
 Aphid_shoots_plum  <- Aphid_shoots_plum  %>%
   filter(treatment == 1|treatment == 3|treatment == 8|treatment == 9) 
+
+#exporting for use in minitab
+#write.xlsx(Aphid_shoots_plum, "Frass_in_soil_shoots")
+
 ```
 
 ### Descriptive statistics of Aphid Shoots by Treatment
@@ -520,6 +545,9 @@ tab_df(aphid_shoots_mean,
 #                                 summarise(Mean = mean(aphid_shoots)))
 
 #write.xlsx(minitab_3, "for_minitab3")
+
+
+
 ```
 
 ### Checking Normality of Aphid Shoots Plum 
@@ -594,8 +622,8 @@ dun_test <- dunnTest(aphid_shoots~treatment,Aphid_shoots_plum,method="bonferroni
 Post_Hoc <- cbind(Mean_Diff,P_Values = round(dun_test$res[4],4))
 
 #Filtering out unrelevant pairings
-Post_Hoc <- Post_Hoc %>% 
-  filter(Pairs %in% c("3-1", "9-8"))
+#Post_Hoc <- Post_Hoc %>% 
+ # filter(Pairs %in% c("3-1", "9-8"))
 
 # Creating Table
 tab_df(Post_Hoc,title = "Table 2: Post-Hoc Aphid Shoots Plum by Treatment",digits = 3)
@@ -633,6 +661,10 @@ Aphid_population_plum <- read_excel("Plumtrees_insects.xlsx",
 #Only taking treatment 1,3,8, and 9
 Aphid_population_plum <- Aphid_population_plum  %>%
   filter(treatment == 1|treatment == 3|treatment == 8|treatment == 9) 
+
+
+#exporting for use in minitab
+write.xlsx(Aphid_population_plum, "Frass_in_soil_population")
 ```
 
 
@@ -651,11 +683,11 @@ tab_df(aphid_population_mean,
 
 
 #Below is the script for manipulating the data for use in Minitab for creating the time series graph.
-minitab_4 <- data.frame(Aphid_population_plum %>%
-                                 group_by(treatment, date) %>%
-                                 summarise(Mean = mean(aphid_population)))
+#minitab_4 <- data.frame(Aphid_population_plum %>%
+#                                 group_by(treatment, date) %>%
+#                                 summarise(Mean = mean(aphid_population)))
 
-write.xlsx(minitab_4, "for_minitab4")
+#write.xlsx(minitab_4, "for_minitab4")
 ```
 
 
@@ -730,8 +762,8 @@ dun_test <- dunnTest(aphid_population~treatment,Aphid_population_plum,method="bo
 #Creating table of results
 Post_Hoc <- cbind(Mean_Diff,P_Values = round(dun_test$res[4],3))
 #Filtering out unrelevant pairings
-Post_Hoc <- Post_Hoc %>% 
-  filter(Pairs %in% c("3-1", "9-8"))
+#Post_Hoc <- Post_Hoc %>% 
+#  filter(Pairs %in% c("3-1", "9-8"))
 # Creating Table
 tab_df(Post_Hoc,title = "Table 4: Post-Hoc Aphid Population Plum by Treatment",digits = 3)
 ```
