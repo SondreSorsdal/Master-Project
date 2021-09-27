@@ -761,7 +761,7 @@ options(digits = 3,scipen = 999)
 dun_test <- dunnTest(aphid_population~treatment,Aphid_population_plum,method="bonferroni")
 #Creating table of results
 Post_Hoc <- cbind(Mean_Diff,P_Values = round(dun_test$res[4],3))
-#Filtering out unrelevant pairings
+#Filtering out unrelevant pairingss
 #Post_Hoc <- Post_Hoc %>% 
 #  filter(Pairs %in% c("3-1", "9-8"))
 # Creating Table
