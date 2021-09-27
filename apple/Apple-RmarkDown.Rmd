@@ -133,8 +133,8 @@ P.adj <-c(0.009157047, 1.000000000,	1.000000000,	1.000000000, 1.000000000, 0.387
 Post_Hoc <- cbind(Mean_Diff, P.adj = P.adj)
 
 #Filtering out unrelevant pairings
-Post_Hoc <- Post_Hoc %>% 
-  filter(Pairs %in% c("FS14-FS1", "NoTreatment-FS1", "FS14+Insect-FS1+Insect", "Insect-FS1+Insect", "NoTreatment-FS14", "Insect-FS14+Insect"))
+#Post_Hoc <- Post_Hoc %>% 
+#  filter(Pairs %in% c("FS14-FS1", "NoTreatment-FS1", "FS14+Insect-FS1+Insect", "Insect-FS1+Insect", "NoTreatment-FS14", "Insect-FS14+Insect"))
 
 # Creating Table
 tab_df(Post_Hoc,title = "Table 2: Post-Hoc Aphid Shoots Apple by Treatment",digits = 3)
@@ -262,15 +262,15 @@ Mean_Diff <-TukeyHSD(aov(aphid_population~treatment,Aphid_population_Apple))$tre
 #Calculating p-values for sinficance of average differences, using bonferroni method
 options(scipen = 999)
 dun_test <- dunnTest(aphid_population~treatment,Aphid_population_Apple,method="bonferroni")
-
+dun_test
 #creating vector of p.adjusted so that it fits the arrangement of Mean_Diff
 P.adj <-c(0.2699941166641,	1.0000000000000, 0.8687009519417,	0.1323470012886, 0.0114705134285, 1.0000000000000,	1.0000000000000,	0.0000093203416,	0.0000001498562, 1.0000000000000,	0.0056289480212,	0.0002523764117,	0.0000948922286, 0.0000021418956, 1.0000000000000)	
 #Creating table of results
 Post_Hoc <- cbind(Mean_Diff, P.adj = P.adj)
 
 #Filtering out unrelevant pairings
-Post_Hoc <- Post_Hoc %>% 
-  filter(Pairs %in% c("FS14-FS1", "NoTreatment-FS1", "FS14+Insect-FS1+Insect", "Insect-FS1+Insect", "NoTreatment-FS14", "Insect-FS14+Insect"))
+#Post_Hoc <- Post_Hoc %>% 
+#  filter(Pairs %in% c("FS14-FS1", "NoTreatment-FS1", "FS14+Insect-FS1+Insect", "Insect-FS1+Insect", "NoTreatment-FS14", "Insect-FS14+Insect"))
 
 
 # Creating Table
