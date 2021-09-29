@@ -39,30 +39,39 @@ Aphid_shoots_plum  <- Aphid_shoots_plum  %>%
   filter(treatment != 3) %>%
   filter(treatment <= 7) %>%
   filter(replica !=5 | treatment > 2) %>%
-  filter(replica != 3 | treatment != 6)
+  filter(replica != 3 | treatment != 6)   
+  
 
-#If rename treatments
-# %>%   mutate(treatment=dplyr::recode(treatment, '1' = "GT", '2' = "GT+FS14", '4' = "GT+Insect", '5' = "GT+FS14+Insect", '6' = "GT+FS1", '7' = "GT+FS1+Insect" ))
+  
+  Aphid_shoots_time_series <- Aphid_shoots_plum %>% 
+  mutate(treatment=dplyr::recode(treatment, '1' = "Control", '2' = "FS14", '4' = "Control+Aphid", '5' = "FS14+Aphid", '6' = "FS1", '7' = "FS1+Aphid" )) 
+
+#Below is the script for manipulating the data for use in Minitab for creating the time series graph. 
+
+timeseries_aphid_shoots_plum <- data.frame(Aphid_shoots_time_series %>%
+                                  group_by(treatment, date) %>%
+                                  summarise(Mean = mean(aphid_shoots)))
+    
+
+#colorblindsafe palette
+cbp1 <- c("#999999", "#E69F00", "#CC79A7", "#009E73",
+          "#F0E442", "#0072B2")
+
+p1 <- ggplot(timeseries_aphid_shoots_plum) +
+ aes(x = date, y = Mean, colour = treatment, group = treatment, ) +
+ geom_line(size = 0.5) +
+ geom_point()+
+ scale_colour_manual(values=cbp1) +
+ labs(x = "Week", y = "Mean number of infected shoots") +
+ theme_bw()
+ 
+print(p1)
 
 
-#exporting dataset for use in Minitab
-
+#exporting dataset for use in Minitab for glm analyses
 #write.xlsx(Aphid_shoots_plum, "spray_frass_plum")
 
 
-#exaple on how time series plot is made in R
-#timeseries_test <- read_excel("for_minitab1.xlsx")
-
-#ggplot(timeseries_test) +
-#  aes(
-#    x = date,
-#    y = Mean,
-#    colour = treatment,
-#    group = treatment
-#  ) +
-#  geom_line(size = 0.5) +
-#  scale_color_hue(direction = 1) +
-#  theme_minimal()
 
    
 ```
@@ -82,12 +91,8 @@ tab_df(aphid_shoots_mean,
 
 
 
-#Below is the script for manipulating the data for use in Minitab for creating the time series graph. 
 
-#datasheet for minitab_1 <- data.frame(Aphid_shoots_plum %>%
-#                                  group_by(treatment, date) %>%
-#                                  summarise(Mean = mean(aphid_shoots)))
-#                                            
+                                            
 ```
 
 ### Checking Normality of Aphid Shoots Plum 
@@ -157,6 +162,7 @@ Mean_Diff <-TukeyHSD(aov(aphid_shoots~treatment,Aphid_shoots_plum))$treatment %>
 #Calculating p-values for signficance of average differences, using bonferroni method
 options(digits = 3,scipen = 999)
 dun_test <- dunnTest(aphid_shoots~treatment,Aphid_shoots_plum,method="bonferroni", list = TRUE)
+dun_test
 
 #creating vector of p.adjusted from dun_test so that it fits the arrangement of Mean_Diff
 P.adj <- c(1.000000000000000000000000000000, 0.000000000000000000530110704691, 0.000000000000000000000000000472, 0.000000000000000203179636004859, 0.000000000000000014024194608921, 0.000000000000000007626269892446, 0.000000000000000000000000012160, 0.000000000000002016630854689484, 0.000000000000000181981783235854,
@@ -213,15 +219,39 @@ Aphid_population_plum  <- Aphid_population_plum  %>%
   filter(replica != 3 | treatment != 6)
 
 
-#Below is the script for manipulating the data for use in Minitab for creating the time series graph.
-#minitab_2 <- data.frame(Aphid_population_plum %>%
-#                                 group_by(treatment, date) %>%
- #                                 summarise(Mean = mean(aphid_population)))
 
-#write.xlsx(minitab_2, "for_minitab2")
+  Aphid_shoots_time_series2 <- Aphid_population_plum %>% 
+  mutate(treatment=dplyr::recode(treatment, '1' = "Control", '2' = "FS14", '4' = "Control+Aphid", '5' = "FS14+Aphid", '6' = "FS1", '7' = "FS1+Aphid" )) 
+
+#Below is the script for manipulating the data for use in Minitab for creating the time series graph. 
+
+timeseries_aphid_shoots_plum2 <- data.frame(Aphid_shoots_time_series2 %>%
+                                  group_by(treatment, date) %>%
+                                  summarise(Mean = mean(aphid_population)))
+    
+
+#colorblindsafe palette
+cbp1 <- c("#999999", "#E69F00", "#CC79A7", "#009E73",
+          "#F0E442", "#0072B2")
+
+p2 <- ggplot(timeseries_aphid_shoots_plum2) +
+ aes(x = date, y = Mean, colour = treatment, group = treatment, ) +
+ geom_line(size = 0.5) +
+ geom_point()+
+ scale_colour_manual(values=cbp1) +
+ labs(x = "Week", y = "Mean population of H. Pruni") +
+ theme_bw()
+ 
+print(p2)
 
 
-#exporting dataset for use in Minitab
+
+
+
+
+
+
+#exporting dataset for use in Minitab for glm analyses
 
 #write.xlsx(Aphid_population_plum, "spray_frass__population_plum")
 
@@ -519,8 +549,37 @@ Aphid_shoots_plum <- read_excel("Plumtrees_insects.xlsx",
 Aphid_shoots_plum  <- Aphid_shoots_plum  %>%
   filter(treatment == 1|treatment == 3|treatment == 8|treatment == 9) 
 
-#exporting for use in minitab
+
+  Aphid_shoots_time_series3 <- Aphid_shoots_plum %>% 
+  mutate(treatment=dplyr::recode(treatment, '1' = "Control", '3' = "FSoil", '8' = "Control+Aphid", '9' = "FSoil+Aphid")) 
+
+#Below is the script for manipulating the data for use in Minitab for creating the time series graph. 
+
+timeseries_aphid_shoots_plum3 <- data.frame(Aphid_shoots_time_series3 %>%
+                                  group_by(treatment, date) %>%
+                                  summarise(Mean = mean(aphid_shoots)))
+    
+
+#colorblindsafe palette
+cbp1 <- c("#999999", "#E69F00", "#CC79A7", "#009E73",
+          "#F0E442", "#0072B2")
+
+p3 <- ggplot(timeseries_aphid_shoots_plum3) +
+ aes(x = date, y = Mean, colour = treatment, group = treatment, ) +
+ geom_line(size = 0.5) +
+ geom_point()+
+ scale_colour_manual(values=cbp1) +
+ labs(x = "Week", y = "Mean number of infected shoots") +
+ theme_bw()
+ 
+print(p3)
+
+
+
+#exporting for use in minitab in glm analyses
 #write.xlsx(Aphid_shoots_plum, "Frass_in_soil_shoots")
+
+
 
 ```
 
@@ -537,14 +596,6 @@ aphid_shoots_mean <- data.frame(Aphid_shoots_plum %>%
 tab_df(aphid_shoots_mean,
        title = "Table 1: Descriptive Statistics of Aphid Shoots Plum by Treatment")
 
-
-#Below is the script for manipulating the data for use in Minitab for creating the time series graph.
-
-#minitab_3 <- data.frame(Aphid_shoots_plum %>%
-#                                 group_by(treatment, date) %>%
-#                                 summarise(Mean = mean(aphid_shoots)))
-
-#write.xlsx(minitab_3, "for_minitab3")
 
 
 
@@ -663,8 +714,35 @@ Aphid_population_plum <- Aphid_population_plum  %>%
   filter(treatment == 1|treatment == 3|treatment == 8|treatment == 9) 
 
 
-#exporting for use in minitab
-write.xlsx(Aphid_population_plum, "Frass_in_soil_population")
+
+ Aphid_shoots_time_series4 <- Aphid_population_plum %>% 
+  mutate(treatment=dplyr::recode(treatment, '1' = "Control", '3' = "FSoil", '8' = "Control+Aphid", '9' = "FSoil+Aphid")) 
+
+#Below is the script for manipulating the data for use in Minitab for creating the time series graph. 
+
+timeseries_aphid_shoots_plum4 <- data.frame(Aphid_shoots_time_series4 %>%
+                                  group_by(treatment, date) %>%
+                                  summarise(Mean = mean(aphid_population)))
+    
+
+#colorblindsafe palette
+cbp1 <- c("#999999", "#E69F00", "#CC79A7", "#009E73",
+          "#F0E442", "#0072B2")
+
+p4 <- ggplot(timeseries_aphid_shoots_plum4) +
+ aes(x = date, y = Mean, colour = treatment, group = treatment, ) +
+ geom_line(size = 0.5) +
+ geom_point()+
+ scale_colour_manual(values=cbp1) +
+ labs(x = "Week", y = "Mean population of H. pruni") +
+ theme_bw()
+ 
+print(p4)
+
+
+
+#exporting for use in minitab for glm analyses
+#write.xlsx(Aphid_population_plum, "Frass_in_soil_population")
 ```
 
 
