@@ -30,10 +30,35 @@ options(knitr.kable.NA = '')
 Aphid_shoots_Apple <- read_excel("Appletrees_insects_v2.xlsx",
                                 sheet="Aphid_shoots_apple")
 
+#renaming
+Aphid_shoots_time_series_apple <- Aphid_shoots_Apple %>% 
+  mutate(treatment=dplyr::recode(treatment, "Insect" = "Control+Aphid", "FS1+Insect" = "FS1+Aphid", "FS14+Insect" = "FS14+Aphid", "NoTreatment" = "Control")) 
+
+#making dataframe for timeseries plot
+timeseries_aphid_shoots_apple <- data.frame(Aphid_shoots_time_series_apple %>%
+                                  group_by(treatment, date) %>%
+                                  summarise(Mean = mean(aphid_shoots)))
+    
+
+#colorblindsafe palette
+cbp1 <- c("#999999", "#E69F00", "#CC79A7", "#009E73",
+          "#F0E442", "#0072B2")
+
+#timeseries plot
+p1 <- ggplot(timeseries_aphid_shoots_apple) +
+ aes(x = date, y = Mean, colour = treatment, group = treatment, ) +
+ geom_line(size = 0.5) +
+ geom_point()+
+ scale_colour_manual(values=cbp1) +
+ labs(x = "Week", y = "Mean number of infected shoots") +
+ theme_bw()
+ 
+print(p1)
+
 
 #exporting dataset for use in Minitab
 
-write.xlsx(Aphid_shoots_Apple, "Spray_frass_apple")
+#write.xlsx(Aphid_shoots_Apple, "Spray_frass_apple")
 ```
 
 ### Descriptive statistics of Aphid Shoots by Treatment
@@ -166,9 +191,46 @@ From the visual comparison, it can be observed that the treatment `FS1+Insect` h
 Aphid_population_Apple <- read_excel("Appletrees_insects_v2.xlsx",
                                 sheet="Aphid_population_apple")
 
-#exporting dataset for use in Minitab
+#renaming
+Aphid_shoots_time_series_apple2 <- Aphid_population_Apple %>% 
+  mutate(treatment=dplyr::recode(treatment, "Insect" = "Control+Aphid", "FS1+Insect" = "FS1+Aphid", "FS14+Insect" = "FS14+Aphid", "NoTreatment" = "Control")) 
 
-write.xlsx(Aphid_population_Apple, "Spray_frass_apple_population")
+#making dataframe for timeseries plot
+timeseries_aphid_shoots_apple2 <- data.frame(Aphid_shoots_time_series_apple2 %>%
+                                  group_by(treatment, date) %>%
+                                  summarise(Mean = mean(aphid_population)))
+    
+
+#colorblindsafe palette
+cbp1 <- c("#999999", "#E69F00", "#CC79A7", "#009E73",
+          "#F0E442", "#0072B2")
+
+#timeseries plot
+p2 <- ggplot(timeseries_aphid_shoots_apple2) +
+ aes(x = date, y = Mean, colour = treatment, group = treatment, ) +
+ geom_line(size = 0.5) +
+ geom_point()+
+ scale_colour_manual(values=cbp1) +
+ labs(x = "Week", y = " Mean population of A. pomi") +
+ theme_bw()
+ 
+print(p2)
+
+
+
+
+#exporting dataset for use in Minitab for glm analyses
+
+#write.xlsx(Aphid_population_Apple, "Spray_frass_apple_population")
+
+
+#Glm with apple sort
+
+temp <- glm(Aphid_population_Apple$aphid_population ~ Aphid_population_Apple$treatment*Aphid_population_Apple$sort)
+temp
+summary(temp)
+
+
 ```
 
 
